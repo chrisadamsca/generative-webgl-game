@@ -1,5 +1,12 @@
 import { Engine } from "./core/Engine"
 
+let engine: Engine;
+
 window.onload = () => {
-    const engine = new Engine().start();
+    engine = new Engine().start();
+    engine.resize();
+}
+
+window.onresize = () => {
+    engine.resize();
 }
