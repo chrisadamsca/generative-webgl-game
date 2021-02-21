@@ -1,3 +1,4 @@
+import { AttributeInfo, GLBuffer } from "./gl/GLBuffer";
 import { gl, GLUtilities } from "./gl/GLUtilities";
 import { Shader } from "./gl/Shader";
 
@@ -8,7 +9,7 @@ export class Engine {
     private _canvas: HTMLCanvasElement;
     private _shader: Shader;
 
-    private _buffer: WebGLBuffer;
+    private _buffer: GLBuffer;
 
     public constructor() {
         console.log('Engine created.');
@@ -41,11 +42,11 @@ export class Engine {
     private loop(): void {
         gl.clear(gl.COLOR_BUFFER_BIT); // ??? What is this? Resetting everything, but how?
 
-        gl.bindBuffer(gl.ARRAY_BUFFER, this._buffer);
-        gl.vertexAttribPointer(0, 3, gl.FLOAT, false, 0, 0);
-        gl.enableVertexAttribArray(0);
+        const colorPosition = this._shader.getUniformLocation('u_color');
+        gl.uniform4f(colorPosition, 1, 0.5, 0, 1); // uniform 4 float 
 
-        gl.drawArrays(gl.TRIANGLES, 0, 3);
+        this._buffer.bind();
+        this._buffer.draw();
 
         requestAnimationFrame(() => {
             
@@ -54,7 +55,13 @@ export class Engine {
     }
 
     private createBuffer(): void {
-        this._buffer = gl.createBuffer();
+        this._buffer = new GLBuffer(3);
+
+        const positionAttributeInfo = new AttributeInfo();
+        positionAttributeInfo.location = this._shader.getAttributeLocation('a_position');
+        positionAttributeInfo.offset = 0;
+        positionAttributeInfo.size = 3;
+        this._buffer.addAttributeLocation(positionAttributeInfo);
 
         const vertices = [
             0,   0,   0,
@@ -62,12 +69,9 @@ export class Engine {
             0.5, 0.5, 0
         ];
 
-        gl.bindBuffer(gl.ARRAY_BUFFER, this._buffer);
-        gl.vertexAttribPointer(0, 3, gl.FLOAT, false, 0, 0);
-        gl.enableVertexAttribArray(0);
-        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
-        gl.bindBuffer(gl.ARRAY_BUFFER, undefined);
-        gl.disableVertexAttribArray(0);
+        this._buffer.pushBackData(vertices);
+        this._buffer.upload();
+        this._buffer.unbind();
     }
 
     private loadShaders(): void {
@@ -80,8 +84,11 @@ export class Engine {
         `;
         const fragmentSource = glsl`
             precision mediump float;
+
+            uniform vec4 u_color;
+
             void main() {
-                gl_FragColor = vec4(1.0);
+                gl_FragColor = u_color;
             }
         `;
         this._shader = new Shader('basic', vertexSource, fragmentSource);
