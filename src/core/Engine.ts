@@ -1,17 +1,17 @@
 import { AssetManager } from "./assets/AssetManager";
-import { AttributeInfo, GLBuffer } from "./gl/GLBuffer";
 import { gl, GLUtilities } from "./gl/GLUtilities";
-import { Shader } from "./gl/Shader";
+import { BasicShader } from "./gl/shaders/BasicShader";
+import { Color } from "./graphics/Color";
+import { Material } from "./graphics/Material";
+import { MaterialManager } from "./graphics/MaterialManager";
 import { Sprite } from "./graphics/Sprite";
 import { Matrix4x4 } from "./math/matrix4x4";
 import { MessageBus } from "./message/MessageBus";
 
-const glsl = x => x;
-
 export class Engine {
 
     private _canvas: HTMLCanvasElement;
-    private _shader: Shader;
+    private _basicShader: BasicShader;
 
     // temporary:
     private _sprite: Sprite;
@@ -26,8 +26,8 @@ export class Engine {
             this._canvas.width = window.innerWidth;
             this._canvas.height = window.innerHeight;
 
-            this._projection = Matrix4x4.orthographic(0, this._canvas.width, 0, this._canvas.height, -100.0, 100.0);
-            gl.viewport(0, 0, this._canvas.width, this._canvas.height);
+            gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
+            this._projection = Matrix4x4.orthographic(0, this._canvas.width, this._canvas.height, 0, -100.0, 100.0);
         }
     }
 
@@ -40,12 +40,20 @@ export class Engine {
         this.resize();
 
         gl.clearColor(0, 0, 1, 1);
-        this.loadShaders();
-        this._shader.use();
-        
-        this._sprite = new Sprite('test', '/assets/textures/texture.jpg');
+
+        // Load Shaders
+        this._basicShader = new BasicShader();
+        this._basicShader.use();
+
+        // Load Materials
+        MaterialManager.registerMaterial(new Material('test', '/assets/textures/texture.jpg', Color.white()));
+
+        this._projection = Matrix4x4.orthographic(0, this._canvas.width, this._canvas.height, 0, -100.0, 100.0);
+
+        this._sprite = new Sprite('test', 'test');
         this._sprite.load();
-        this._sprite.position.x = 1;
+        this._sprite.position.x = 1.7;
+        this._sprite.position.y = 0;
         
         this.loop();
         return this;
@@ -56,53 +64,15 @@ export class Engine {
         
         gl.clear(gl.COLOR_BUFFER_BIT); // ??? What is this? Resetting everything, but how?
 
-        const colorLocation = this._shader.getUniformLocation('u_tint');
-        // gl.uniform4f(colorLocation, 1, 0.5, 0, 1); // uniform 4 float 
-        gl.uniform4f(colorLocation, 1, 1, 1, 1); // uniform 4 float 
-
-        const projectionLocation = this._shader.getUniformLocation('u_projection');
+        const projectionLocation = this._basicShader.getUniformLocation('u_projection');
         gl.uniformMatrix4fv(projectionLocation, false, new Float32Array(this._projection.data));
 
-        const modelLocation = this._shader.getUniformLocation('u_model');
-        gl.uniformMatrix4fv(modelLocation, false, new Float32Array(Matrix4x4.translation(this._sprite.position).data));
-
-        this._sprite.draw(this._shader);
+        this._sprite.draw(this._basicShader);
 
         requestAnimationFrame(() => {
             
             this.loop();
         });
-    }
-
-    private loadShaders(): void {
-        const vertexSource = glsl`
-            attribute vec3 a_position;
-            attribute vec2 a_texCoord;
-
-            uniform mat4 u_projection;
-            uniform mat4 u_model;
-
-            varying vec2 v_texCoord;
-
-            void main() {
-                gl_Position = u_model * u_projection * vec4(a_position, 1.0);
-                v_texCoord = a_texCoord;
-            }
-        `;
-
-        const fragmentSource = glsl`
-            precision mediump float;
-
-            uniform vec4 u_tint;
-            uniform sampler2D u_diffuse;
-
-            varying vec2 v_texCoord;
-
-            void main() {
-                gl_FragColor = u_tint * texture2D(u_diffuse, v_texCoord);
-            }
-        `;
-        this._shader = new Shader('basic', vertexSource, fragmentSource);
     }
 
 }
