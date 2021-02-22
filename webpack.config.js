@@ -11,8 +11,9 @@ module.exports = {
   // Path and filename of your result bundle.
   // Webpack will bundle all JavaScript into this file
   output: {
+    path: __dirname,
     filename: 'app.js',
-    path: __dirname
+    publicPath: '/',
   },
 
   module: {

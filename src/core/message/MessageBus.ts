@@ -11,7 +11,7 @@ export class MessageBus {
     private constructor() {}
 
     public static addSubscription(code: string, handler: IMessageHandler): void {
-        if (MessageBus._subscriptions[code] !== undefined) {
+        if (MessageBus._subscriptions[code] === undefined) {
             MessageBus._subscriptions[code] = [];
         }
 
