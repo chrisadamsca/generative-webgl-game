@@ -20,7 +20,7 @@ export class BasicShader extends Shader {
             varying vec2 v_texCoord;
 
             void main() {
-                gl_Position = u_model * u_projection * vec4(a_position, 1.0);
+                gl_Position = u_projection * u_model  * vec4(a_position, 1.0);
                 v_texCoord = a_texCoord;
             }
         `;

@@ -7,14 +7,14 @@ import { MaterialManager } from "./graphics/MaterialManager";
 import { Sprite } from "./graphics/Sprite";
 import { Matrix4x4 } from "./math/matrix4x4";
 import { MessageBus } from "./message/MessageBus";
+import { LevelManager } from "./world/LevelManager";
 
 export class Engine {
 
     private _canvas: HTMLCanvasElement;
     private _basicShader: BasicShader;
-
+    
     // temporary:
-    private _sprite: Sprite;
     private _projection: Matrix4x4;
 
     public constructor() {
@@ -43,17 +43,15 @@ export class Engine {
 
         // Load Shaders
         this._basicShader = new BasicShader();
-        this._basicShader.use();
+        this._basicShader.use()
 
         // Load Materials
         MaterialManager.registerMaterial(new Material('test', '/assets/textures/texture.jpg', Color.white()));
 
-        this._projection = Matrix4x4.orthographic(0, this._canvas.width, this._canvas.height, 0, -100.0, 100.0);
+        const levelId = LevelManager.createTestLevel();
+        LevelManager.changeLevel(levelId);
 
-        this._sprite = new Sprite('test', 'test');
-        this._sprite.load();
-        this._sprite.position.x = 1.7;
-        this._sprite.position.y = 0;
+        this._projection = Matrix4x4.orthographic(0, this._canvas.width, this._canvas.height, 0, -100.0, 100.0);
         
         this.loop();
         return this;
@@ -61,13 +59,15 @@ export class Engine {
 
     private loop(): void {
         MessageBus.update(0);
+
+        LevelManager.update(0);
         
         gl.clear(gl.COLOR_BUFFER_BIT); // ??? What is this? Resetting everything, but how?
 
-        const projectionLocation = this._basicShader.getUniformLocation('u_projection');
-        gl.uniformMatrix4fv(projectionLocation, false, new Float32Array(this._projection.data));
+        LevelManager.render(this._basicShader);
 
-        this._sprite.draw(this._basicShader);
+        const projectionLocation = this._basicShader.getUniformLocation('u_projection');
+        gl.uniformMatrix4fv(projectionLocation, false, this._projection.toFloat32Array());
 
         requestAnimationFrame(() => {
             

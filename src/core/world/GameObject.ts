@@ -1,3 +1,4 @@
+import { BaseComponent } from "../components/BaseComponent";
 import { Shader } from "../gl/Shader";
 import { Matrix4x4 } from "../math/matrix4x4";
 import { Transform } from "../math/Transform";
@@ -10,6 +11,7 @@ export class GameObject {
     private _parent: GameObject;
     private _isLoaded: boolean = false;
     private _scene: Scene;
+    private _components: BaseComponent[] = [];
 
     private _localMatrix: Matrix4x4 = Matrix4x4.identity();
     private _worldMatrix: Matrix4x4 = Matrix4x4.identity();
@@ -64,8 +66,17 @@ export class GameObject {
         return undefined;
     }
 
+    public addComponent(component: BaseComponent): void {
+        this._components.push(component);
+        component.setOwner(this);
+    }
+
     public load(): void {
         this._isLoaded = true;
+
+        for (const component of this._components) {
+            component.load();
+        }
 
         for (const child of this._children) {
             child.load();
@@ -73,12 +84,24 @@ export class GameObject {
     }
 
     public update(time: number): void {
+
+        this._localMatrix = this.transform.getTransformationMatrix(); // TODO: recalc only on change, otherwise performance issue
+        this.updateWorldMatrix((this._parent !== undefined ? this._parent.worldMatrix : undefined));
+
+        for (const component of this._components) {
+            component.update(time);
+        }
+
         for (const child of this._children) {
             child.update(time);
         }
     }
 
     public render(shader: Shader): void {
+        for (const component of this._components) {
+            component.render(shader);
+        }
+
         for (const child of this._children) {
             child.render(shader);
         }
@@ -86,6 +109,14 @@ export class GameObject {
 
     protected onAdded(scene: Scene): void {
         this._scene = scene;
+    }
+
+    private updateWorldMatrix(parentWorldMatrix: Matrix4x4): void {
+        if (parentWorldMatrix !== undefined) {
+            this._worldMatrix = Matrix4x4.multiply(parentWorldMatrix, this._localMatrix);
+        } else {
+            this._worldMatrix.copyFrom(this._localMatrix);
+        }
     }
 
 }
