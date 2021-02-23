@@ -34,6 +34,20 @@ export class Vector3 {
     }
 
 
+    public static get zero(): Vector3 {
+        return new Vector3();
+    }
+
+    public static get one(): Vector3 {
+        return new Vector3(1, 1, 1);
+    }
+
+    public copyFrom(vector: Vector3): void {
+        this._x = vector._x;
+        this._y = vector._y;
+        this._z = vector._z;
+    }
+
     public toArray(): number[] {
         return [this._x, this._y, this._z];
     }
