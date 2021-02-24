@@ -1,4 +1,5 @@
 import { Shader } from "../gl/Shader";
+import { GameObject } from "./GameObject";
 import { Scene } from "./Scene";
 
 export enum LevelState {
@@ -14,6 +15,7 @@ export class Level {
     private _description: string;
     private _scene: Scene;
     private _state: LevelState = LevelState.UNINITIALIZED;
+    private _globalId: number = -1;
 
     public constructor(id: number, name: string, description: string) {
         this._id = id;
@@ -36,6 +38,17 @@ export class Level {
 
     public get scene(): Scene {
         return this._scene;
+    }
+
+    public initialize(levelData: any): void {
+        if (levelData.objects === undefined) {
+            throw new Error(`Level initialisation error: Objects not present.`);
+        }
+
+        for (const key in levelData.objects) {
+            const object = levelData.objects[key];
+            this.loadGameObject(object, this._scene.root);
+        }
     }
 
     public load(): void {
@@ -67,6 +80,31 @@ export class Level {
     }
 
     public onDeactivated(): void {
+
+    }
+
+    private loadGameObject(dataSection: any, parent: GameObject): void {
+        let name: string;
+        if (dataSection.name !== undefined) {
+            name = String(dataSection.name);
+        }
+        
+        const gameObject = new GameObject(++this._globalId, name, this._scene);
+
+        if (dataSection.transform !== undefined) {
+            gameObject.transform.setFromJSON(dataSection.transform);
+        }
+        
+        if (dataSection.children !== undefined) {
+            for (const key in dataSection.children) {
+                const object = dataSection.children[key];
+                this.loadGameObject(object, gameObject);
+            }
+        }
+
+        if (parent !== undefined) {
+            parent.addChild(gameObject)
+        }
 
     }
 

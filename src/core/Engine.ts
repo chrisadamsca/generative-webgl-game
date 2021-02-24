@@ -35,6 +35,7 @@ export class Engine {
         console.log('Engine started.');
 
         AssetManager.initialize();
+        LevelManager.initialize();
         
         this._canvas = GLUtilities.initialize();
         this.resize();
@@ -48,10 +49,9 @@ export class Engine {
         // Load Materials
         MaterialManager.registerMaterial(new Material('test', '/assets/textures/texture.jpg', Color.white()));
 
-        const levelId = LevelManager.createTestLevel();
-        LevelManager.changeLevel(levelId);
-
         this._projection = Matrix4x4.orthographic(0, this._canvas.width, this._canvas.height, 0, -100.0, 100.0);
+
+        LevelManager.changeLevel(0);
         
         this.loop();
         return this;

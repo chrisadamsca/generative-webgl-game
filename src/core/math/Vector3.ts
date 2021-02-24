@@ -56,4 +56,10 @@ export class Vector3 {
         return new Float32Array(this.toArray());
     }
 
+    public setFromJSON(json: any): void {
+        if (json.x !== undefined) this._x = Number(json.x);
+        if (json.y !== undefined) this._y = Number(json.y);
+        if (json.z !== undefined) this._z = Number(json.z);
+    }
+
 }

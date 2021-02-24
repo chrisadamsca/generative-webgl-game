@@ -1,0 +1,27 @@
+{
+    "name": "TestLevel",
+    "id": 0,
+    "description": "A simple TestLevel for testing.",
+    "objects": [
+        {
+            "name": "ParentObject",
+            "transform": {
+                "position": {
+                    "x": 300,
+                    "y": 300
+                }
+            },
+            "children": [
+                {
+                    "name": "ParentObject",
+                    "transform": {
+                        "position": {
+                            "x": 120,
+                            "y": 120
+                        }
+                    }
+                }
+            ]
+        }
+    ]
+}
