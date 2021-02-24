@@ -8,6 +8,9 @@ import { Sprite } from "./graphics/Sprite";
 import { Matrix4x4 } from "./math/matrix4x4";
 import { MessageBus } from "./message/MessageBus";
 import { LevelManager } from "./world/LevelManager";
+import { SpriteComponent, SpriteComponentData } from "./components/SpriteComponent"
+
+const tempWebpackFixToIncludeSpriteTS = new SpriteComponentData();
 
 export class Engine {
 

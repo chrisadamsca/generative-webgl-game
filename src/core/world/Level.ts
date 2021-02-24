@@ -1,3 +1,4 @@
+import { ComponentManager } from "../components/ComponentManager";
 import { Shader } from "../gl/Shader";
 import { GameObject } from "./GameObject";
 import { Scene } from "./Scene";
@@ -95,6 +96,14 @@ export class Level {
             gameObject.transform.setFromJSON(dataSection.transform);
         }
         
+        if (dataSection.components !== undefined) {
+            for (const c in dataSection.components) {
+                const data = dataSection.components[c];
+                const component = ComponentManager.extractComponent(data);
+                gameObject.addComponent(component);
+            }
+        }
+
         if (dataSection.children !== undefined) {
             for (const key in dataSection.children) {
                 const object = dataSection.children[key];

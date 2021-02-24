@@ -55,7 +55,7 @@ export class LevelManager implements IMessageHandler {
     }
 
     public onMessage(message: Message): void {
-        if (message.code.indexOf(MESSAGE_ASSET_LOADER_ASSET_LOADED)) {
+        if (message.code.indexOf(MESSAGE_ASSET_LOADER_ASSET_LOADED) !== -1) {
             const asset = message.context as JSONAsset;
             LevelManager.loadLevel(asset);
         }
