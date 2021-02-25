@@ -14,6 +14,7 @@ import { InputManager, MouseContext } from "./input/InputManager";
 import { KeyboardMovementBehaviorData } from "./behaviors/KeyboardMovementBehavior";
 import { IMessageHandler } from "./message/IMessageHandler";
 import { Message } from "./message/Message";
+import { AudioManager } from "./audio/AudioManager";
 
 const tempWebpackFixToIncludeSpriteTS = new SpriteComponentData();
 const tempWebpackFixToIncludeAnimatedSpriteTS = new AnimatedSpriteComponentData();
@@ -48,6 +49,8 @@ export class Engine implements IMessageHandler{
         if (message.code === 'MOUSE_UP') {
             const context = message.context as MouseContext;
             document.title = `Pos: [${context.position.x}, ${context.position.y}]`;
+
+            AudioManager.playSound('flap');
         }
     }
 
@@ -74,6 +77,9 @@ export class Engine implements IMessageHandler{
         // Load Materials
         MaterialManager.registerMaterial(new Material('test', '/assets/textures/texture.jpg', Color.white()));
         MaterialManager.registerMaterial(new Material('duck', '/assets/textures/duck.png', Color.white()));
+
+        // Load Sounds
+        AudioManager.loadSoundFile('flap', '/assets/sounds/flap.mp3');
 
         this._projection = Matrix4x4.orthographic(0, this._canvas.width, this._canvas.height, 0, -100.0, 100.0);
 
