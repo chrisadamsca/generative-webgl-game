@@ -1,3 +1,4 @@
+import { BehaviorManager } from "../behaviors/BehaviorManager";
 import { ComponentManager } from "../components/ComponentManager";
 import { Shader } from "../gl/Shader";
 import { GameObject } from "./GameObject";
@@ -101,6 +102,14 @@ export class Level {
                 const data = dataSection.components[c];
                 const component = ComponentManager.extractComponent(data);
                 gameObject.addComponent(component);
+            }
+        }
+
+        if (dataSection.behaviors !== undefined) {
+            for (const b in dataSection.behaviors) {
+                const data = dataSection.behaviors[b];
+                const behavior = BehaviorManager.extractBehavior(data);
+                gameObject.addBehavior(behavior);
             }
         }
 

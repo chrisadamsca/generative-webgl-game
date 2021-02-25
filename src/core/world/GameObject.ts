@@ -1,4 +1,4 @@
-import { BaseComponent } from "../components/BaseComponent";
+import { IBehavior } from "../behaviors/IBehavior";
 import { IComponent } from "../components/IComponent";
 import { Shader } from "../gl/Shader";
 import { Matrix4x4 } from "../math/matrix4x4";
@@ -13,6 +13,7 @@ export class GameObject {
     private _isLoaded: boolean = false;
     private _scene: Scene;
     private _components: IComponent[] = [];
+    private _behaviors: IBehavior[] = [];
 
     private _localMatrix: Matrix4x4 = Matrix4x4.identity();
     private _worldMatrix: Matrix4x4 = Matrix4x4.identity();
@@ -72,6 +73,11 @@ export class GameObject {
         component.setOwner(this);
     }
 
+    public addBehavior(behavior: IBehavior): void {
+        this._behaviors.push(behavior);
+        behavior.setOwner(this);
+    }
+
     public load(): void {
         this._isLoaded = true;
 
@@ -91,6 +97,10 @@ export class GameObject {
 
         for (const component of this._components) {
             component.update(time);
+        }
+
+        for (const behavior of this._behaviors) {
+            behavior.update(time);
         }
 
         for (const child of this._children) {

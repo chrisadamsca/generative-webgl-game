@@ -9,8 +9,10 @@ import { Matrix4x4 } from "./math/matrix4x4";
 import { MessageBus } from "./message/MessageBus";
 import { LevelManager } from "./world/LevelManager";
 import { SpriteComponent, SpriteComponentData } from "./components/SpriteComponent"
+import { RotationBehaviorData } from "./behaviors/RotationBehavior";
 
 const tempWebpackFixToIncludeSpriteTS = new SpriteComponentData();
+const tempWebpackFixToIncludeBehaviorTS = new RotationBehaviorData();
 
 export class Engine {
 
