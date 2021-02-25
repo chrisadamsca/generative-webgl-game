@@ -5,16 +5,18 @@ import { Matrix4x4 } from "../math/matrix4x4";
 import { Vector3 } from "../math/Vector3";
 import { Material } from "./Material";
 import { MaterialManager } from "./MaterialManager";
+import { Vertex } from "./Vertex";
 
 export class Sprite {
 
-    private _name: string;
-    private _width: number;
-    private _height: number;
+    protected _name: string;
+    protected _width: number;
+    protected _height: number;
 
-    private _buffer: GLBuffer;
-    private _materialName: string;
-    private _material: Material;
+    protected _buffer: GLBuffer;
+    protected _materialName: string;
+    protected _material: Material;
+    protected _vertices: Vertex[] = [];
 
     public constructor(name: string, materialName: string, width: number = 100, height: number = 100) {
         this._name = name;
@@ -37,31 +39,32 @@ export class Sprite {
     }
 
     public load(): void {
-        this._buffer = new GLBuffer(5);
+        this._buffer = new GLBuffer();
 
         const positionAttributeInfo = new AttributeInfo();
         positionAttributeInfo.location = 0; // not dynamic! maybe look up the position of the positionattribute
-        positionAttributeInfo.offset = 0;
         positionAttributeInfo.size = 3;
         this._buffer.addAttributeLocation(positionAttributeInfo);
 
         const texCoordAttributeInfo = new AttributeInfo();
         texCoordAttributeInfo.location = 1; // not dynamic! maybe look up the position of the positionattribute
-        texCoordAttributeInfo.offset = 3;
         texCoordAttributeInfo.size = 2;
         this._buffer.addAttributeLocation(texCoordAttributeInfo);
 
-        const vertices = [
-            0,   0,   0, 0, 0,
-            0,   this._height, 0, 0, 1.0,
-            this._width, this._height, 0, 1.0, 1.0,
+        this._vertices = [
+            new Vertex(0,   0,   0, 0, 0),
+            new Vertex(0,   this._height, 0, 0, 1.0),
+            new Vertex(this._width, this._height, 0, 1.0, 1.0),
 
-            this._width, this._height, 0, 1.0, 1.0,
-            this._width, 0,   0, 1.0, 0,
-            0,   0,   0, 0, 0
+            new Vertex(this._width, this._height, 0, 1.0, 1.0),
+            new Vertex(this._width, 0,   0, 1.0, 0),
+            new Vertex(0,   0,   0, 0, 0)
         ];
 
-        this._buffer.pushBackData(vertices);
+        for (const vertex of this._vertices) {
+            this._buffer.pushBackData(vertex.toArray());
+        }
+
         this._buffer.upload();
         this._buffer.unbind();
     }

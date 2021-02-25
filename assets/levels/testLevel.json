@@ -4,11 +4,39 @@
     "description": "A simple TestLevel for testing.",
     "objects": [
         {
+            "name": "duck",
+            "transform": {
+                "position": {
+                    "x": 100,
+                    "y": 100
+                },
+                "scale": {
+                    "x": 5,
+                    "y": 5
+                }
+            },
+            "components": [
+                {
+                    "name": "DuckAnimatedSprite",
+                    "type": "animatedSprite",
+                    "materialName": "duck",
+                    "frameWidth": 17,
+                    "frameHeight": 12,
+                    "frameCount": 3,
+                    "frameSequence": [0, 1, 2, 1]
+                }
+            ]
+        },
+        {
             "name": "ParentObject",
             "transform": {
                 "position": {
                     "x": 300,
                     "y": 300
+                },
+                "scale": {
+                    "x": 2,
+                    "y": 2
                 }
             },
             "children": [

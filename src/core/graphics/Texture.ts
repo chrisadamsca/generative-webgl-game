@@ -21,6 +21,7 @@ export class Texture implements IMessageHandler {
         this._width = width;
         this._height = height;
 
+
         this._handle = gl.createTexture();
 
         Message.subscribe(MESSAGE_ASSET_LOADER_ASSET_LOADED + this._name, this);
@@ -48,7 +49,7 @@ export class Texture implements IMessageHandler {
     }
     
     public get height(): number {
-        return this.height;
+        return this._height;
     }
 
     public destroy(): void {
@@ -86,8 +87,10 @@ export class Texture implements IMessageHandler {
         } else {
             gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
             gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR );
         }
+
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST );
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST );
 
         this._isLoaded = true;
     }

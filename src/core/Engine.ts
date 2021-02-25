@@ -10,14 +10,18 @@ import { MessageBus } from "./message/MessageBus";
 import { LevelManager } from "./world/LevelManager";
 import { SpriteComponent, SpriteComponentData } from "./components/SpriteComponent"
 import { RotationBehaviorData } from "./behaviors/RotationBehavior";
+import { AnimatedSpriteComponentData } from "./components/AnimatedSpriteComponent";
 
 const tempWebpackFixToIncludeSpriteTS = new SpriteComponentData();
+const tempWebpackFixToIncludeAnimatedSpriteTS = new AnimatedSpriteComponentData();
 const tempWebpackFixToIncludeBehaviorTS = new RotationBehaviorData();
 
 export class Engine {
 
     private _canvas: HTMLCanvasElement;
     private _basicShader: BasicShader;
+    private _previousTime: number = 0;
+    
     
     // temporary:
     private _projection: Matrix4x4;
@@ -46,6 +50,8 @@ export class Engine {
         this.resize();
 
         gl.clearColor(0, 0, 1, 1);
+        gl.enable(gl.BLEND);
+        gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 
         // Load Shaders
         this._basicShader = new BasicShader();
@@ -53,6 +59,7 @@ export class Engine {
 
         // Load Materials
         MaterialManager.registerMaterial(new Material('test', '/assets/textures/texture.jpg', Color.white()));
+        MaterialManager.registerMaterial(new Material('duck', '/assets/textures/duck.png', Color.white()));
 
         this._projection = Matrix4x4.orthographic(0, this._canvas.width, this._canvas.height, 0, -100.0, 100.0);
 
@@ -63,10 +70,21 @@ export class Engine {
     }
 
     private loop(): void {
-        MessageBus.update(0);
+        this.update();
+        this.render();
+    }
 
-        LevelManager.update(0);
+    private update(): void {
+        const delta = performance.now() - this._previousTime;
         
+        MessageBus.update(delta);
+
+        LevelManager.update(delta);
+
+        this._previousTime = performance.now();
+    }
+
+    private render(): void {
         gl.clear(gl.COLOR_BUFFER_BIT); // ??? What is this? Resetting everything, but how?
 
         LevelManager.render(this._basicShader);
@@ -74,10 +92,7 @@ export class Engine {
         const projectionLocation = this._basicShader.getUniformLocation('u_projection');
         gl.uniformMatrix4fv(projectionLocation, false, this._projection.toFloat32Array());
 
-        requestAnimationFrame(() => {
-            
-            this.loop();
-        });
+        requestAnimationFrame(() => this.loop());
     }
 
 }

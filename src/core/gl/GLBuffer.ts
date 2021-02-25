@@ -3,7 +3,7 @@ import { gl } from "./GLUtilities";
 export class AttributeInfo {
     public location: number;
     public size: number;
-    public offset: number;
+    public offset: number = 0;
 }
 
 export class GLBuffer {
@@ -21,8 +21,8 @@ export class GLBuffer {
     private _data: number[] = [];
     private _attributes: AttributeInfo[] = [];
 
-    public constructor(elementSize: number, dataType: number = gl.FLOAT, targetBufferType: number = gl.ARRAY_BUFFER, mode: number = gl.TRIANGLES) {
-        this._elementSize = elementSize;
+    public constructor(dataType: number = gl.FLOAT, targetBufferType: number = gl.ARRAY_BUFFER, mode: number = gl.TRIANGLES) {
+        this._elementSize = 0;
         this._dataType = dataType;
         this._targetBufferType = targetBufferType;
         this._mode = mode;
@@ -45,7 +45,6 @@ export class GLBuffer {
                 throw new Error('Unrecognized data type: ' + dataType.toString());
                 break;
         }
-        this._stride = this._elementSize * this._typeSize;
         this._buffer = gl.createBuffer();
     }
 
@@ -73,11 +72,23 @@ export class GLBuffer {
 
     public addAttributeLocation(info: AttributeInfo): void {
         this._hasAttributeLocation = true;
+        info.offset = this._elementSize;
         this._attributes.push(info);
+        this._elementSize += info.size;
+        this._stride = this._elementSize * this._typeSize;
+    }
+
+    public setData(data: number[]): void {
+        this.clearData();
+        this.pushBackData(data);
     }
 
     public pushBackData(data: number[]): void {
         this._data = [...this._data, ...data];
+    }
+
+    public clearData(): void {
+        this._data.length = 0;
     }
 
     public upload(): void {
