@@ -16,6 +16,7 @@ import { IMessageHandler } from "./message/IMessageHandler";
 import { Message } from "./message/Message";
 import { AudioManager } from "./audio/AudioManager";
 import { CollisionComponentData } from "./components/CollisionComponent";
+import { CollisionManager } from "./collision/CollisionManager";
 
 const tempWebpackFixToIncludeSpriteTS = new SpriteComponentData();
 const tempWebpackFixToIncludeAnimatedSpriteTS = new AnimatedSpriteComponentData();
@@ -100,8 +101,8 @@ export class Engine implements IMessageHandler{
         const delta = performance.now() - this._previousTime;
         
         MessageBus.update(delta);
-
         LevelManager.update(delta);
+        CollisionManager.update(delta);
 
         this._previousTime = performance.now();
     }

@@ -1,9 +1,8 @@
+import { CollisionManager } from "../collision/CollisionManager";
 import { Shader } from "../gl/Shader";
 import { Circle2D } from "../graphics/shapes2D/Circle2D";
 import { IShape2D } from "../graphics/shapes2D/IShape2d";
 import { Rectangle2D } from "../graphics/shapes2D/Rectangle2d";
-import { Sprite } from "../graphics/Sprite";
-import { Vector3 } from "../math/Vector3";
 import { BaseComponent } from "./BaseComponent";
 import { ComponentManager } from "./ComponentManager";
 import { IComponent } from "./IComponent";
@@ -77,9 +76,37 @@ export class CollisionComponent extends BaseComponent {
         return this._shape;
     }
 
+    public load(): void {
+        super.load();
+
+        this._shape.position.copyFrom(this.owner.transform.position.toVector2());
+
+        // Tell the collision manager that we exist
+        CollisionManager.registerCollisionComponent(this);
+    }
+
+    update(time: number): void {
+        // TODO: need to get world position for nested objects
+        this._shape.position.copyFrom(this.owner.transform.position.toVector2().add(this.shape.offset));
+
+        super.update(time);
+    }
+
     public render(shader: Shader): void {
         // this._sprite.draw(shader, this.owner.worldMatrix);
         super.render(shader);
+    }
+
+    public onCollisionEntry(other: CollisionComponent): void {
+        
+    }
+    
+    public onCollisionUpdate(other: CollisionComponent): void {
+
+    }
+    
+    public onCollisionExit(other: CollisionComponent): void {
+
     }
 
 }
