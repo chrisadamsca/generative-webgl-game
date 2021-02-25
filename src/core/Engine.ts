@@ -4,19 +4,23 @@ import { BasicShader } from "./gl/shaders/BasicShader";
 import { Color } from "./graphics/Color";
 import { Material } from "./graphics/Material";
 import { MaterialManager } from "./graphics/MaterialManager";
-import { Sprite } from "./graphics/Sprite";
 import { Matrix4x4 } from "./math/matrix4x4";
 import { MessageBus } from "./message/MessageBus";
 import { LevelManager } from "./world/LevelManager";
-import { SpriteComponent, SpriteComponentData } from "./components/SpriteComponent"
+import { SpriteComponentData } from "./components/SpriteComponent"
 import { RotationBehaviorData } from "./behaviors/RotationBehavior";
 import { AnimatedSpriteComponentData } from "./components/AnimatedSpriteComponent";
+import { InputManager, MouseContext } from "./input/InputManager";
+import { KeyboardMovementBehaviorData } from "./behaviors/KeyboardMovementBehavior";
+import { IMessageHandler } from "./message/IMessageHandler";
+import { Message } from "./message/Message";
 
 const tempWebpackFixToIncludeSpriteTS = new SpriteComponentData();
 const tempWebpackFixToIncludeAnimatedSpriteTS = new AnimatedSpriteComponentData();
-const tempWebpackFixToIncludeBehaviorTS = new RotationBehaviorData();
+const tempWebpackFixToIncludeRotationBehaviorTS = new RotationBehaviorData();
+const tempWebpackFixToIncludeKeyboardMovementBehaviorTS = new KeyboardMovementBehaviorData();
 
-export class Engine {
+export class Engine implements IMessageHandler{
 
     private _canvas: HTMLCanvasElement;
     private _basicShader: BasicShader;
@@ -40,11 +44,21 @@ export class Engine {
         }
     }
 
+    public onMessage(message: Message): void {
+        if (message.code === 'MOUSE_UP') {
+            const context = message.context as MouseContext;
+            document.title = `Pos: [${context.position.x}, ${context.position.y}]`;
+        }
+    }
+
     public start(): Engine {
         console.log('Engine started.');
 
         AssetManager.initialize();
+        InputManager.initialize();
         LevelManager.initialize();
+
+        Message.subscribe('MOUSE_UP', this)
         
         this._canvas = GLUtilities.initialize();
         this.resize();
