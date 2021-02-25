@@ -15,9 +15,11 @@ import { KeyboardMovementBehaviorData } from "./behaviors/KeyboardMovementBehavi
 import { IMessageHandler } from "./message/IMessageHandler";
 import { Message } from "./message/Message";
 import { AudioManager } from "./audio/AudioManager";
+import { CollisionComponentData } from "./components/CollisionComponent";
 
 const tempWebpackFixToIncludeSpriteTS = new SpriteComponentData();
 const tempWebpackFixToIncludeAnimatedSpriteTS = new AnimatedSpriteComponentData();
+const tempWebpackFixToIncludeColisionComponentTS = new CollisionComponentData();
 const tempWebpackFixToIncludeRotationBehaviorTS = new RotationBehaviorData();
 const tempWebpackFixToIncludeKeyboardMovementBehaviorTS = new KeyboardMovementBehaviorData();
 

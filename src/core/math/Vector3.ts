@@ -42,10 +42,29 @@ export class Vector3 {
         return new Vector3(1, 1, 1);
     }
 
+    public static distance(a: Vector3, b: Vector3): number {
+        const diff = a.subtract(b);
+        return Math.sqrt(diff.x * diff.x + diff.y * diff.y + diff.z * diff.z);
+    }
+
     public copyFrom(vector: Vector3): void {
         this._x = vector._x;
         this._y = vector._y;
         this._z = vector._z;
+    }
+
+    public set(x?: number, y?: number, z?: number): void {
+        if (x !== undefined) this._x = x;
+        if (y !== undefined) this._y = y; 
+        if (z !== undefined) this._z = z;
+    }
+
+    public equals(vector: Vector3): boolean {
+        return (
+            this._x === vector.x &&
+            this._y === vector.y &&
+            this._z === vector.z
+        );
     }
 
     public toArray(): number[] {

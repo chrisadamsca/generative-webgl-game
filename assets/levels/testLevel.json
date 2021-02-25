@@ -24,6 +24,14 @@
                     "frameHeight": 12,
                     "frameCount": 3,
                     "frameSequence": [0, 1, 2, 1]
+                },
+                {
+                    "name": "DuckCollision",
+                    "type": "collision",
+                    "shape": {
+                        "type": "circle",
+                        "radius": 43
+                    }
                 }
             ],
             "behaviors": [
@@ -76,7 +84,11 @@
                 {
                     "name": "test",
                     "type": "sprite",
-                    "materialName": "test"
+                    "materialName": "test",
+                    "origin": {
+                        "x": 0.5,
+                        "y": 0.5
+                    }
                 }
             ],
             "behaviors": [
