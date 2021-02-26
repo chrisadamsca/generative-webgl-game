@@ -6,6 +6,7 @@ export interface IBehavior {
 
     setOwner(owner: GameObject): void;
 
+    updateReady(): void;
     update(time: number): void;
     apply(userData: any): void;
 

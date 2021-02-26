@@ -15,8 +15,8 @@ export class ComponentManager {
             if (ComponentManager._registeredBuilders[json.type] !== undefined) {
                 return ComponentManager._registeredBuilders[json.type].buildFromJSON(json);
             }
+            throw new Error(`ComponentManager error: type is missing in JSON or builder is not registered for this type.`);
         }
-        throw new Error(`ComponentManager error: type is missing in JSON or builder is not registered for this type.`);
     }
 
 }

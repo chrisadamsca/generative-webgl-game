@@ -1,6 +1,7 @@
 import { Shader } from "../gl/Shader";
 import { AnimatedSprite } from "../graphics/AnimatedSprite";
 import { Sprite } from "../graphics/Sprite";
+import { Vector3 } from "../math/Vector3";
 import { BaseComponent } from "./BaseComponent";
 import { ComponentManager } from "./ComponentManager";
 import { IComponent } from "./IComponent";
@@ -14,9 +15,14 @@ export class AnimatedSpriteComponentData extends SpriteComponentData implements 
     public frameHeight: number;
     public frameCount: number;
     public frameSequence: number[] = [];
+    public autoplay: boolean = true;
 
     public setFromJSON(json: any): void {
         super.setFromJSON(json);
+
+        if (json.autoplay !== undefined) {
+            this.autoplay = Boolean(json.autoplay);
+        }
 
         if (json.frameWidth === undefined) {
             throw new Error(`AnimatedSpriteComponentData requires 'frameWidth' to be defined.`);
@@ -65,16 +71,34 @@ ComponentManager.registerBuilder(new AnimatedSpriteComponentBuilder());
 
 export class AnimatedSpriteComponent extends BaseComponent {
     
+    private _autoplay: boolean;
     private _sprite: AnimatedSprite;
 
     public constructor(data: AnimatedSpriteComponentData) {
         super(data);
 
+        this._autoplay = data.autoplay;
         this._sprite = new AnimatedSprite(data.name, data.materialName, data.frameWidth, data.frameHeight, data.frameWidth, data.frameHeight, data.frameCount, data.frameSequence);
+
+        if (!data.origin.equals(Vector3.zero)) {
+            this._sprite.origin.copyFrom(data.origin);
+        }
+
+    }
+
+    public isPlaying(): boolean {
+        return this._sprite.isPlaying;
+    }
+
+    public updateReady(): void {
+        if (!this._autoplay) {
+            this._sprite.stop();
+        }
     }
 
     public load(): void {
         this._sprite.load();
+
     }
 
     public update(time: number): void {
@@ -86,6 +110,18 @@ export class AnimatedSpriteComponent extends BaseComponent {
     public render(shader: Shader): void {
         this._sprite.draw(shader, this.owner.worldMatrix);
         super.render(shader);
+    }
+
+    public play(): void {
+        this._sprite.play()
+    }
+
+    public stop(): void {
+        this._sprite.stop()
+    }
+
+    public setFrame(frameNumber: number): void {
+        this._sprite.setFrame(frameNumber);
     }
 
 }

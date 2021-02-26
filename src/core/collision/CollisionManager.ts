@@ -1,6 +1,7 @@
 import { CollisionComponent } from "../components/CollisionComponent";
+import { Message } from "../message/Message";
 
-class CollisionData {
+export class CollisionData {
     public a: CollisionComponent;
     public b: CollisionComponent;
     public time: number;
@@ -68,6 +69,8 @@ export class CollisionManager {
                         const collision = new CollisionData(CollisionManager._totalTime, comp, other);
                         comp.onCollisionEntry(other);
                         other.onCollisionEntry(comp);
+                        Message.sendPrio('COLLISION_ENTRY::' + comp.name, this, collision);
+                        Message.sendPrio('COLLISION_ENTRY::' + other.name, this, collision);
                         CollisionManager._collisionData.push(collision);
                     }
                 }
@@ -92,10 +95,11 @@ export class CollisionManager {
 
             data.a.onCollisionExit(data.b);
             data.b.onCollisionExit(data.a);
+
+            Message.sendPrio('COLLISION_EXIT::' + data.a.name, this, data);
+            Message.sendPrio('COLLISION_EXIT::' + data.b.name, this, data);
         }
         
-        // TODO: Remove after testing
-        document.title = CollisionManager._collisionData.length.toString();
     }
 
 }

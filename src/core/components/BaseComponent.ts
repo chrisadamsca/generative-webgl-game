@@ -27,6 +27,10 @@ export abstract class BaseComponent implements IComponent {
 
     }
 
+    public updateReady(): void {
+        
+    };
+    
     public update(time: number): void {
         
     }

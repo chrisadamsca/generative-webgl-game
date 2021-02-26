@@ -52,8 +52,6 @@ export class Engine implements IMessageHandler{
         if (message.code === 'MOUSE_UP') {
             const context = message.context as MouseContext;
             document.title = `Pos: [${context.position.x}, ${context.position.y}]`;
-
-            AudioManager.playSound('flap');
         }
     }
 
@@ -63,8 +61,6 @@ export class Engine implements IMessageHandler{
         AssetManager.initialize();
         InputManager.initialize();
         LevelManager.initialize();
-
-        Message.subscribe('MOUSE_UP', this)
         
         this._canvas = GLUtilities.initialize();
         this.resize();
@@ -78,11 +74,13 @@ export class Engine implements IMessageHandler{
         this._basicShader.use()
 
         // Load Materials
-        MaterialManager.registerMaterial(new Material('test', '/assets/textures/texture.jpg', Color.white()));
+        MaterialManager.registerMaterial(new Material('grass', '/assets/textures/grass.png', Color.white()));
         MaterialManager.registerMaterial(new Material('duck', '/assets/textures/duck.png', Color.white()));
 
         // Load Sounds
         AudioManager.loadSoundFile('flap', '/assets/sounds/flap.mp3');
+        AudioManager.loadSoundFile('ting', '/assets/sounds/ting.mp3');
+        AudioManager.loadSoundFile('dead', '/assets/sounds/dead.mp3');
 
         this._projection = Matrix4x4.orthographic(0, this._canvas.width, this._canvas.height, 0, -100.0, 100.0);
 

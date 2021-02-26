@@ -11,8 +11,8 @@
                     "y": 100
                 },
                 "scale": {
-                    "x": 8,
-                    "y": 8
+                    "x": 2,
+                    "y": 2
                 }
             },
             "components": [
@@ -57,11 +57,7 @@
                 {
                     "name": "test",
                     "type": "sprite",
-                    "materialName": "test",
-                    "origin": {
-                        "x": 0.5,
-                        "y": 0.5
-                    }
+                    "materialName": "grass"
                 },
                 {
                     "name": "TestRectCollision",

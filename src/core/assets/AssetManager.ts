@@ -40,7 +40,7 @@ export class AssetManager {
     }
 
     public static isAssetLoaded(assetName: string): boolean {
-        return AssetManager.loadAsset[assetName] !== undefined;
+        return AssetManager._loadedAssets[assetName] !== undefined;
     }
 
     public static getAsset(assetName: string): IAsset {

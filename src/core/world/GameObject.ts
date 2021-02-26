@@ -57,6 +57,40 @@ export class GameObject {
         }
     }
 
+    public getComponentByName(name: string): IComponent {
+        for (const component of this._components) {
+            if (component.name === name) {
+                return component;
+            }
+        }
+
+        for (const child of this._children) {
+            const component = child.getComponentByName(name);
+            if (component !== undefined) {
+                return component;
+            }
+        }
+
+        return undefined;
+    }
+
+    public getBehaviorByName(name: string): IBehavior {
+        for (const behavior of this._behaviors) {
+            if (behavior.name === name) {
+                return behavior;
+            }
+        }
+
+        for (const child of this._children) {
+            const behavior = child.getBehaviorByName(name);
+            if (behavior !== undefined) {
+                return behavior;
+            }
+        }
+
+        return undefined;
+    }
+
     public getObjectByName(name: string): GameObject {
         if (this.name = name) return this;
 
@@ -89,6 +123,20 @@ export class GameObject {
             child.load();
         }
     }
+
+    public updateReady(): void {
+        for (const component of this._components) {
+            component.updateReady();
+        }
+
+        for (const behavior of this._behaviors) {
+            behavior.updateReady();
+        }
+
+        for (const child of this._children) {
+            child.updateReady();
+        }
+    };
 
     public update(time: number): void {
 

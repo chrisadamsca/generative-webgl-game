@@ -15,8 +15,8 @@ export class BehaviorManager {
             if (BehaviorManager._registeredBuilders[json.type] !== undefined) {
                 return BehaviorManager._registeredBuilders[json.type].buildFromJSON(json);
             }
+            throw new Error(`BehaviorManager error: type is missing in JSON or builder is not registered for this type.`);
         }
-        throw new Error(`BehaviorManager error: type is missing in JSON or builder is not registered for this type.`);
     }
 
 }
