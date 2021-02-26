@@ -17,12 +17,16 @@ import { Message } from "./message/Message";
 import { AudioManager } from "./audio/AudioManager";
 import { CollisionComponentData } from "./components/CollisionComponent";
 import { CollisionManager } from "./collision/CollisionManager";
+import { PlayerBehaviorData } from "./behaviors/PlayerBehavior";
+import { importMath } from "./math/MathExtensions";
 
 const tempWebpackFixToIncludeSpriteTS = new SpriteComponentData();
 const tempWebpackFixToIncludeAnimatedSpriteTS = new AnimatedSpriteComponentData();
 const tempWebpackFixToIncludeColisionComponentTS = new CollisionComponentData();
 const tempWebpackFixToIncludeRotationBehaviorTS = new RotationBehaviorData();
 const tempWebpackFixToIncludeKeyboardMovementBehaviorTS = new KeyboardMovementBehaviorData();
+const tempWebpackFixToIncludePlayerBehaviorTS = new PlayerBehaviorData();
+const i = importMath;
 
 export class Engine implements IMessageHandler{
 
