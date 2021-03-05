@@ -49,6 +49,8 @@ export class CollisionManager {
                 // Do not check against collisions with self.
                 if (comp === other) continue;
 
+                if (comp.isStatic && other.isStatic) continue;
+
                 if (comp.shape.intersects(other.shape)) {
                     
                     let exists: boolean = false;

@@ -31,6 +31,14 @@ export class Sprite {
     public get name(): string {
         return this._name;
     }
+    
+    public get width(): number {
+        return this._width;
+    }
+
+    public get height(): number {
+        return this._height;
+    }
 
     public get origin(): Vector3 {
         return this._origin;

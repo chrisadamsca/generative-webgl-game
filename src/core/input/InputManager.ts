@@ -56,6 +56,7 @@ export class InputManager {
 
     private static onKeyDown(event: KeyboardEvent): boolean {
         InputManager._keys[event.code] = true;
+        Message.send('KEY_DOWN', InputManager._keys[event.code]);
         return true;
         // event.preventDefault();
         // event.stopPropagation();

@@ -3,6 +3,7 @@ import { IComponent } from "../components/IComponent";
 import { Shader } from "../gl/Shader";
 import { Matrix4x4 } from "../math/matrix4x4";
 import { Transform } from "../math/Transform";
+import { Vector3 } from "../math/Vector3";
 import { Scene } from "./Scene";
 
 export class GameObject {
@@ -176,6 +177,10 @@ export class GameObject {
         } else {
             this._worldMatrix.copyFrom(this._localMatrix);
         }
+    }
+
+    public getWorldPosition(): Vector3 {
+        return new Vector3(this._worldMatrix.data[12], this._worldMatrix.data[13], this._worldMatrix.data[14]);
     }
 
 }

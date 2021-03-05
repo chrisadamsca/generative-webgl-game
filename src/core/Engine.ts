@@ -19,6 +19,7 @@ import { CollisionComponentData } from "./components/CollisionComponent";
 import { CollisionManager } from "./collision/CollisionManager";
 import { PlayerBehaviorData } from "./behaviors/PlayerBehavior";
 import { importMath } from "./math/MathExtensions";
+import { ScrollBehaviorData } from "./behaviors/ScrollBehavior";
 
 const tempWebpackFixToIncludeSpriteTS = new SpriteComponentData();
 const tempWebpackFixToIncludeAnimatedSpriteTS = new AnimatedSpriteComponentData();
@@ -26,6 +27,7 @@ const tempWebpackFixToIncludeColisionComponentTS = new CollisionComponentData();
 const tempWebpackFixToIncludeRotationBehaviorTS = new RotationBehaviorData();
 const tempWebpackFixToIncludeKeyboardMovementBehaviorTS = new KeyboardMovementBehaviorData();
 const tempWebpackFixToIncludePlayerBehaviorTS = new PlayerBehaviorData();
+const tempWebpackFixToIncludeScrollBehaviorTS = new ScrollBehaviorData();
 const i = importMath;
 
 export class Engine implements IMessageHandler{
@@ -78,6 +80,9 @@ export class Engine implements IMessageHandler{
         this._basicShader.use()
 
         // Load Materials
+        MaterialManager.registerMaterial(new Material('bg', '/assets/textures/bg.png', Color.white()));
+        MaterialManager.registerMaterial(new Material('end', '/assets/textures/end.png', Color.white()));
+        MaterialManager.registerMaterial(new Material('middle', '/assets/textures/middle.png', Color.white()));
         MaterialManager.registerMaterial(new Material('grass', '/assets/textures/grass.png', Color.white()));
         MaterialManager.registerMaterial(new Material('duck', '/assets/textures/duck.png', Color.white()));
 
@@ -89,6 +94,10 @@ export class Engine implements IMessageHandler{
         this._projection = Matrix4x4.orthographic(0, this._canvas.width, this._canvas.height, 0, -100.0, 100.0);
 
         LevelManager.changeLevel(0);
+
+        setTimeout(() => {
+            Message.send('GAME_START', this);
+        }, 3000);
         
         this.loop();
         return this;
