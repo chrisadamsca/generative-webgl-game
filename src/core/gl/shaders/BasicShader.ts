@@ -10,14 +10,14 @@ export class BasicShader extends Shader {
     }
 
     private getVertexSource(): string {
-        return glsl`
-            attribute vec3 a_position;
-            attribute vec2 a_texCoord;
+        return glsl`#version 300 es
+            in vec3 a_position;
+            in vec2 a_texCoord;
 
             uniform mat4 u_projection;
             uniform mat4 u_model;
 
-            varying vec2 v_texCoord;
+            out vec2 v_texCoord;
 
             void main() {
                 gl_Position = u_projection * u_model  * vec4(a_position, 1.0);
@@ -27,16 +27,18 @@ export class BasicShader extends Shader {
     }
 
     private getFragmentSource(): string {
-        return glsl`
+        return glsl`#version 300 es
             precision mediump float;
 
             uniform vec4 u_tint;
             uniform sampler2D u_diffuse;
 
-            varying vec2 v_texCoord;
+            in vec2 v_texCoord;
+
+            out vec4 myOutputColor;
 
             void main() {
-                gl_FragColor = u_tint * texture2D(u_diffuse, v_texCoord);
+                myOutputColor = u_tint * texture(u_diffuse, v_texCoord);
             }
         `;
     }
