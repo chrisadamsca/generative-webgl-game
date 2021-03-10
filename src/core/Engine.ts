@@ -50,7 +50,7 @@ export class Engine implements IMessageHandler{
             this._canvas.height = window.innerHeight;
 
             gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
-            this._projection = Matrix4x4.orthographic(0, this._canvas.width, this._canvas.height, 0, -100.0, 100.0);
+            this._projection = Matrix4x4.multiply(Matrix4x4.orthographic(0, this._canvas.width, this._canvas.height, 0, -100.0, 100.0), Matrix4x4.rotationX(0.5));
         }
     }
 
@@ -91,7 +91,7 @@ export class Engine implements IMessageHandler{
         AudioManager.loadSoundFile('ting', '/assets/sounds/ting.mp3');
         AudioManager.loadSoundFile('dead', '/assets/sounds/dead.mp3');
 
-        this._projection = Matrix4x4.orthographic(0, this._canvas.width, this._canvas.height, 0, -100.0, 100.0);
+        this._projection = Matrix4x4.multiply(Matrix4x4.orthographic(0, this._canvas.width, this._canvas.height, 0, -100.0, 100.0), Matrix4x4.rotationXYZ(0.5, 0.5, 0));
 
         LevelManager.changeLevel(0);
 
