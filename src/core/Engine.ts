@@ -20,6 +20,11 @@ import { CollisionManager } from "./collision/CollisionManager";
 import { PlayerBehaviorData } from "./behaviors/PlayerBehavior";
 import { importMath } from "./math/MathExtensions";
 import { ScrollBehaviorData } from "./behaviors/ScrollBehavior";
+import { Cube } from "./graphics/Cube";
+import { CubeComponentData } from "./components/CubeComponent";
+import { Vector3 } from "./math/Vector3";
+import { AdvancedShader } from "./gl/shaders/AdvancedShader";
+import { mat4 } from "gl-matrix";
 
 const tempWebpackFixToIncludeSpriteTS = new SpriteComponentData();
 const tempWebpackFixToIncludeAnimatedSpriteTS = new AnimatedSpriteComponentData();
@@ -28,17 +33,21 @@ const tempWebpackFixToIncludeRotationBehaviorTS = new RotationBehaviorData();
 const tempWebpackFixToIncludeKeyboardMovementBehaviorTS = new KeyboardMovementBehaviorData();
 const tempWebpackFixToIncludePlayerBehaviorTS = new PlayerBehaviorData();
 const tempWebpackFixToIncludeScrollBehaviorTS = new ScrollBehaviorData();
+const tempWebpackFixToIncludeCubeTS = new CubeComponentData();
 const i = importMath;
 
 export class Engine implements IMessageHandler{
 
     private _canvas: HTMLCanvasElement;
-    private _basicShader: BasicShader;
+    private _basicShader: AdvancedShader;
     private _previousTime: number = 0;
     
-    
+    private _camera: Matrix4x4 = Matrix4x4.identity();
+
     // temporary:
-    private _projection: Matrix4x4;
+    // private _projection: Matrix4x4;
+    private _projection: mat4;
+    private _projectionMatrix: mat4 = mat4.create();
 
     public constructor() {
         console.log('Engine created.');
@@ -50,7 +59,9 @@ export class Engine implements IMessageHandler{
             this._canvas.height = window.innerHeight;
 
             gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
-            this._projection = Matrix4x4.multiply(Matrix4x4.orthographic(0, this._canvas.width, this._canvas.height, 0, -100.0, 100.0), Matrix4x4.rotationX(0.5));
+            
+            // this._projection = Matrix4x4.orthographic(0, this._canvas.width, this._canvas.height, 0, -1000.0, 1000.0);
+            this._projection = mat4.perspective(this._projectionMatrix, 45, this._canvas.width / this._canvas.height, 0.1, 10000);
         }
     }
 
@@ -71,27 +82,25 @@ export class Engine implements IMessageHandler{
         this._canvas = GLUtilities.initialize();
         this.resize();
 
+        this._camera = Matrix4x4.multiply(this._camera, Matrix4x4.rotationXYZ(0, 0, 0));
+
         gl.clearColor(0, 0, 1, 1);
         gl.enable(gl.BLEND);
         gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 
         // Load Shaders
-        this._basicShader = new BasicShader();
+        this._basicShader = new AdvancedShader();
         this._basicShader.use()
 
         // Load Materials
         MaterialManager.registerMaterial(new Material('bg', '/assets/textures/bg.png', Color.white()));
-        MaterialManager.registerMaterial(new Material('end', '/assets/textures/end.png', Color.white()));
-        MaterialManager.registerMaterial(new Material('middle', '/assets/textures/middle.png', Color.white()));
-        MaterialManager.registerMaterial(new Material('grass', '/assets/textures/grass.png', Color.white()));
-        MaterialManager.registerMaterial(new Material('duck', '/assets/textures/duck.png', Color.white()));
+        MaterialManager.registerMaterial(new Material('cube', '/assets/textures/cube.png', Color.green()));
 
         // Load Sounds
-        AudioManager.loadSoundFile('flap', '/assets/sounds/flap.mp3');
-        AudioManager.loadSoundFile('ting', '/assets/sounds/ting.mp3');
-        AudioManager.loadSoundFile('dead', '/assets/sounds/dead.mp3');
+        // AudioManager.loadSoundFile('flap', '/assets/sounds/flap.mp3');
 
-        this._projection = Matrix4x4.multiply(Matrix4x4.orthographic(0, this._canvas.width, this._canvas.height, 0, -100.0, 100.0), Matrix4x4.rotationXYZ(0.5, 0.5, 0));
+        // this._projection = Matrix4x4.orthographic(0, this._canvas.width, this._canvas.height, 0, -1000.0, 1000.0);
+        this._projection = mat4.perspective(this._projectionMatrix, 45, this._canvas.width / this._canvas.height, 0.1, 10000);
 
         LevelManager.changeLevel(0);
 
@@ -123,8 +132,8 @@ export class Engine implements IMessageHandler{
 
         LevelManager.render(this._basicShader);
 
-        const projectionLocation = this._basicShader.getUniformLocation('u_projection');
-        gl.uniformMatrix4fv(projectionLocation, false, this._projection.toFloat32Array());
+        const projectionLocation = this._basicShader.getUniformLocation('uProjectionMatrix');
+        gl.uniformMatrix4fv(projectionLocation, false, this._projection);
 
         requestAnimationFrame(() => this.loop());
     }

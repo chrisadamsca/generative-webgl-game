@@ -3,7 +3,7 @@ import { gl } from "./GLUtilities";
 export abstract class Shader {
 
     private _name: string;
-    private _program: WebGLProgram
+    public _program: WebGLProgram
     private _attribtues: {[name: string]: number} = {};
     private _uniforms: {[name: string]: WebGLUniformLocation} = {};
 
@@ -81,16 +81,19 @@ export abstract class Shader {
 
             this._attribtues[info.name] = gl.getAttribLocation(this._program, info.name);
         }
+        console.warn('###', this._attribtues)
     }
     
     private detectUniforms(): void {
         const uniformCount = gl.getProgramParameter(this._program, gl.ACTIVE_UNIFORMS);
+        console.warn('### Uniforms: ', uniformCount)
         for (let i = 0; i < uniformCount; i++) {
             const info: WebGLActiveInfo = gl.getActiveUniform(this._program, i);
             if (!info) break;
     
             this._uniforms[info.name] = gl.getUniformLocation(this._program, info.name);
         }
+        console.warn('### Uniforms: ', this._uniforms)
     }
 
 }

@@ -82,8 +82,8 @@ export class Sprite {
         const modelLocation = shader.getUniformLocation('u_model');
         gl.uniformMatrix4fv(modelLocation, false, model.toFloat32Array());
 
-        const colorLocation = shader.getUniformLocation('u_tint');
-        gl.uniform4fv(colorLocation, this._material.tint.toFloat32Array()); // uniform 4 float (v vector)
+        // const colorLocation = shader.getUniformLocation('u_tint');
+        // gl.uniform4fv(colorLocation, this._material.tint.toFloat32Array()); // uniform 4 float (v vector)
 
         if (this._material.diffuseTexture !== undefined) {
             this._material.diffuseTexture.activateAndBind(0);
@@ -104,11 +104,11 @@ export class Sprite {
 
         this._vertices = [
             new Vertex(minX, minY, 0, 0,   0),
-            new Vertex(minX, maxY, 0, 0,   1.0),
-            new Vertex(maxX, maxY, 0, 1.0, 1.0),
+            new Vertex(minX, maxY, 0, 0,   1),
+            new Vertex(maxX, maxY, 0, 0.5, 1),
 
-            new Vertex(maxX, maxY, 0, 1.0, 1.0),
-            new Vertex(maxX, minY, 0, 1.0, 0),
+            new Vertex(maxX, maxY, 0, 0.5, 1),
+            new Vertex(maxX, minY, 0, 0.5, 0),
             new Vertex(minX, minY, 0, 0,   0)
         ];
 

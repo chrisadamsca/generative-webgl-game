@@ -1,6 +1,8 @@
+import { vec3 } from "gl-matrix";
 import { BehaviorManager } from "../behaviors/BehaviorManager";
 import { ComponentManager } from "../components/ComponentManager";
 import { Shader } from "../gl/Shader";
+import { Vector3 } from "../math/Vector3";
 import { GameObject } from "./GameObject";
 import { Scene } from "./Scene";
 
@@ -57,6 +59,7 @@ export class Level {
         this._state = LevelState.LOADING;
 
         this._scene.load();
+        // this._scene.root.transform.rotation = new Vector3(-Math.PI / 2, Math.PI / 4, 0)
         this._scene.root.updateReady();
 
         this._state = LevelState.UPDATING;

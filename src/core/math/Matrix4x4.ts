@@ -1,3 +1,4 @@
+import { mat4 } from "gl-matrix";
 import { Vector3 } from "./Vector3";
 
 export class Matrix4x4 {
@@ -166,6 +167,10 @@ export class Matrix4x4 {
 
     public toFloat32Array(): Float32Array {
         return new Float32Array( this._data );
+    }
+
+    public toGlMatrix(): mat4 {
+        return mat4.fromValues(this._data[0], this._data[1], this._data[2], this._data[3], this._data[4], this._data[5], this._data[6], this._data[7], this._data[8], this._data[9], this._data[10], this._data[11], this._data[12], this._data[13], this._data[14], this._data[15]);
     }
 
     public copyFrom(matrix: Matrix4x4): void {
