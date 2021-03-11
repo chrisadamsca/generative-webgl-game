@@ -26,63 +26,62 @@ export class Cube {
     protected _materialName: string;
     protected _material: Material;
     protected _vertices: number[] = [	
-        // Front
-        -0.5, 0.5, 0.5,
-        -0.5,-0.5, 0.5,
-        0.5,-0.5, 0.5,
-
-        0.5,-0.5, 0.5,
-        0.5,0.5, 0.5,
-        -0.5,0.5, 0.5,
-
-        // Right
-        0.5, 0.5, 0.5,
-        0.5,-0.5, 0.5,
-        0.5,-0.5, -0.5,
-        
-        0.5,-0.5, -0.5,
-        0.5,0.5, -0.5,
-        0.5,0.5, 0.5,
-
-        // Back
-        -0.5, 0.5, -0.5,
-        -0.5,-0.5, -0.5,
-        0.5,-0.5, -0.5,
-
-        0.5,-0.5, -0.5,
-        0.5,0.5, -0.5,
-        -0.5,0.5, -0.5,
-        
-        // Top
-        -0.5, 0.5, -0.5,
-        -0.5,0.5, 0.5,
-        0.5,0.5, 0.5,
-        
-        0.5,0.5, 0.5,
-        0.5,0.5, -0.5,
-        -0.5, 0.5, -0.5,
-
-        // Left
-        -0.5, 0.5, 0.5,
-        -0.5,-0.5, 0.5,
-        -0.5,-0.5, -0.5,
-        
-        -0.5,-0.5, -0.5,
-        -0.5,0.5, -0.5,
-        -0.5,0.5, 0.5,
-
-        // Bottom
-        -0.5, -0.5, -0.5,
-        -0.5,-0.5, 0.5,
-        0.5,-0.5, 0.5,
-        
-        0.5,-0.5, 0.5,
-        0.5,-0.5, -0.5,
-        -0.5, -0.5, -0.5,
+        // Front 
+        -0.5, 0.5, 0.5, 0, 0, 1,
+        -0.5,-0.5, 0.5, 0, 0, 1,
+        0.5,-0.5, 0.5, 0, 0, 1,
+ 
+        0.5,-0.5, 0.5, 0, 0, 1,
+        0.5,0.5, 0.5, 0, 0, 1,
+        -0.5,0.5, 0.5, 0, 0, 1,
+ 
+        // Right 
+        0.5, 0.5, 0.5, 1, 0, 0,
+        0.5,-0.5, 0.5, 1, 0, 0,
+        0.5,-0.5, -0.5, 1, 0, 0,
+         
+        0.5,-0.5, -0.5, 1, 0, 0,
+        0.5,0.5, -0.5, 1, 0, 0,
+        0.5,0.5, 0.5, 1, 0, 0,
+ 
+        // Back 
+        -0.5, 0.5, -0.5, 0, 0, -1,
+        -0.5,-0.5, -0.5, 0, 0, -1,
+        0.5,-0.5, -0.5, 0, 0, -1,
+ 
+        0.5,-0.5, -0.5, 0, 0, -1,
+        0.5,0.5, -0.5, 0, 0, -1,
+        -0.5,0.5, -0.5, 0, 0, -1,
+         
+        // Top 
+        -0.5, 0.5, -0.5, 0, 1, 0,
+        -0.5,0.5, 0.5, 0, 1, 0,
+        0.5,0.5, 0.5, 0, 1, 0,
+         
+        0.5,0.5, 0.5, 0, 1, 0,
+        0.5,0.5, -0.5, 0, 1, 0,
+        -0.5, 0.5, -0.5, 0, 1, 0,
+ 
+        // Left 
+        -0.5, 0.5, 0.5, -1, 0, 0,
+        -0.5,-0.5, 0.5, -1, 0, 0,
+        -0.5,-0.5, -0.5, -1, 0, 0,
+         
+        -0.5,-0.5, -0.5, -1, 0, 0,
+        -0.5,0.5, -0.5, -1, 0, 0,
+        -0.5,0.5, 0.5, -1, 0, 0,
+ 
+        // Bottom 
+        -0.5, -0.5, -0.5, 0, -1, 0,
+        -0.5,-0.5, 0.5, 0, -1, 0,
+        0.5,-0.5, 0.5, 0, -1, 0,
+         
+        0.5,-0.5, 0.5, 0, -1, 0,
+        0.5,-0.5, -0.5, 0, -1, 0,
+        -0.5, -0.5, -0.5, 0, -1, 0,
 
     ];
     protected _indeces: number[] = [
-        0, 1, 2
         // // Front
         // 0,1,2,0,2,3,
         // // Right
@@ -177,7 +176,6 @@ export class Cube {
 
     public set origin(value: Vector3) {
         this._origin = value;
-        this.recalculateVertices();
     }
 
     public destroy(): void {
@@ -190,44 +188,27 @@ export class Cube {
     }
 
     public load(): void {
-        // Create VAO
         this._vertexArray = gl.createVertexArray();
-        // Bind VAO
         gl.bindVertexArray(this._vertexArray);
         
         // Vertices
         this._verticesBuffer = new GLBuffer();
         const positionAttributeInfo = new AttributeInfo();
-        positionAttributeInfo.location = 0;
+        positionAttributeInfo.location = 1;
         positionAttributeInfo.size = 3;
         this._verticesBuffer.addAttributeLocation(positionAttributeInfo);
 
 
-        this._verticesBuffer.pushBackData(this._vertices);
-        this._verticesBuffer.upload();
-
-
-        // Normals
-        this._normalsBuffer = new GLBuffer();
         const normalAttributeInfo = new AttributeInfo();
         normalAttributeInfo.location = 0;
         normalAttributeInfo.size = 3;
-        this._normalsBuffer.addAttributeLocation(normalAttributeInfo);
+        this._verticesBuffer.addAttributeLocation(normalAttributeInfo);
 
-
-        this._normalsBuffer.pushBackData(this._normals);
-        this._normalsBuffer.upload();
-
-        // Indeces
-        this._indecesBuffer = new GLBuffer(gl.UNSIGNED_SHORT, gl.ELEMENT_ARRAY_BUFFER);
-
-
-        this._indecesBuffer.pushBackData(this._indeces);
-        this._indecesBuffer.upload();
+        this._verticesBuffer.pushBackData(this._vertices);
+        this._verticesBuffer.upload();
+        this._verticesBuffer.unbind();
 
         gl.bindVertexArray(null);
-
-        // this.calculateVertices();
     }
 
     public update(time: number): void {
@@ -236,136 +217,30 @@ export class Cube {
 
     public draw(shader: Shader, modelViewMatrix: Matrix4x4): void {
 
-
-        // uniform mat4 uProjectionMatrix;  [-]
-        // uniform mat4 uModelViewMatrix;   [x]
-        // uniform mat4 uNormalMatrix;      [x]
-        // uniform vec3 uMaterialDiffuse;   [x]
-        // uniform vec3 uLightDirection;    [x]
-        // uniform vec3 uLightDiffuse;      [x]
-
-        const testModelViewMatrix = mat4.create();
-
         const modelLocation = shader.getUniformLocation('uModelViewMatrix');
-        gl.uniformMatrix4fv(modelLocation, false, testModelViewMatrix);
+        gl.uniformMatrix4fv(modelLocation, false, modelViewMatrix.toFloat32Array());
 
         const colorLocation = shader.getUniformLocation('uMaterialDiffuse');
         gl.uniform3fv(colorLocation, this._material.tint.toVec3Float32Array()); // uniform 4 float (v vector)
 
-        const lightDirLocation = shader.getUniformLocation('uLightDirection');
-        gl.uniform3fv(lightDirLocation, new Float32Array([-2.0, 0.0, -1.0])); // uniform 4 float (v vector)
-
-        const lightDiffuseLocation = shader.getUniformLocation('uLightDiffuse');
-        gl.uniform3fv(lightDiffuseLocation, new Float32Array([1, 0.8, 0.8])); // uniform 4 float (v vector)
-
-
-
+        // set normalMatrix attribute
         let normalMatrix = mat4.create();
-        mat4.copy(normalMatrix, testModelViewMatrix);
+        mat4.copy(normalMatrix, modelViewMatrix.toFloat32Array());
         mat4.invert(normalMatrix, normalMatrix);
         mat4.transpose(normalMatrix, normalMatrix);
-
         const normalLocation = shader.getUniformLocation('uNormalMatrix');
         gl.uniformMatrix4fv(normalLocation, false, normalMatrix); // uniform 4 float (v vector)
-
-
-
-        if (this.log < 10) {
-            console.warn('uModelViewMatrix', testModelViewMatrix);
-            // console.warn('uNormalMatrix', normalMatrix);
-            this.log++;
-        }
         
         try {
-            // Bind
             gl.bindVertexArray(this._vertexArray);
             this._verticesBuffer.bind();
             this._verticesBuffer.draw(); 
             this._verticesBuffer.unbind();
             gl.bindVertexArray(null);
           }
-          // We catch the `error` and simply output to the screen for testing/debugging purposes
           catch (error) {
             console.error(error);
           }
-    }
-
-    protected calculateVertices(): void {
-
-
-
-    }
-
-    protected recalculateVertices(): void {
-        // const minX = - (this._width * this._origin.x);
-        // const minY = - (this._height * this._origin.y);
-        // const minZ = - (this._depth * this._origin.z);
-        // const maxX = this._width * (1.0 - this._origin.x);
-        // const maxY = this._height * (1.0 - this._origin.y);
-        // const maxZ = this._depth * (1.0 - this._origin.z);
-
-        // // Front
-        // this._vertices[0].position.set(minX, minY, minZ);
-        // this._vertices[1].position.set(minX, maxY, minZ);
-        // this._vertices[2].position.set(maxX, maxY, minZ);
-
-        // this._vertices[3].position.set(maxX, maxY, minZ);
-        // this._vertices[4].position.set(maxX, minY, minZ);
-        // this._vertices[5].position.set(minX, minY, minZ);
-
-        // // Right
-        // this._vertices[6].position.set(maxX, minY, minZ);
-        // this._vertices[7].position.set(maxX, maxY, minZ);
-        // this._vertices[8].position.set(maxX, maxY, maxZ);
-
-        // this._vertices[9].position.set(maxX, maxY, maxZ);
-        // this._vertices[10].position.set(maxX, minY, maxZ);
-        // this._vertices[11].position.set(maxX, minY, minZ);
-
-        // // Top
-        // this._vertices[12].position.set(minX, minY, minZ);
-        // this._vertices[13].position.set(minX, minY, maxZ);
-        // this._vertices[14].position.set(maxX, minY, maxZ);
-        
-        // this._vertices[15].position.set(maxX, minY, maxZ);
-        // this._vertices[16].position.set(maxX, minY, minZ);
-        // this._vertices[17].position.set(minX, minY, minZ);
-
-        // // Back
-        // this._vertices[18].position.set(minX, minY, maxZ);
-        // this._vertices[19].position.set(minX, maxY, maxZ);
-        // this._vertices[20].position.set(maxX, maxY, maxZ);
-
-        // this._vertices[21].position.set(maxX, maxY, maxZ);
-        // this._vertices[22].position.set(maxX, minY, maxZ);
-        // this._vertices[23].position.set(minX, minY, maxZ);
-
-        // // Left
-        // this._vertices[24].position.set(minX, minY, minZ);
-        // this._vertices[25].position.set(minX, maxY, minZ);
-        // this._vertices[26].position.set(minX, maxY, maxZ);
-
-        // this._vertices[27].position.set(minX, maxY, maxZ);
-        // this._vertices[28].position.set(minX, minY, maxZ);
-        // this._vertices[29].position.set(minX, minY, minZ);
-
-        // // Bottom
-        // this._vertices[30].position.set(minX, maxY, minZ);
-        // this._vertices[31].position.set(minX, maxY, maxZ);
-        // this._vertices[32].position.set(maxX, maxY, maxZ);
-        
-        // this._vertices[33].position.set(maxX, maxY, maxZ);
-        // this._vertices[34].position.set(maxX, maxY, minZ);
-        // this._vertices[35].position.set(minX, maxY, minZ);
-
-        // this._buffer.clearData();
-
-        // for (const vertex of this._vertices) {
-        //     this._buffer.pushBackData(vertex.toArray());
-        // }
-
-        // this._buffer.upload();
-        // this._buffer.unbind();
     }
 
 }

@@ -8,6 +8,34 @@
             "transform": {
                 "position": {
                     "x": 0,
+                    "y": 1,
+                    "z": 0
+                },
+                "scale": {
+                    "x": 0.5,
+                    "y": 0.5,
+                    "z": 0.5
+                }
+            },
+            "components": [
+                {
+                    "name": "cubeComponent",
+                    "type": "cube",
+                    "materialName": "cube"
+                }
+            ],
+            "behaviors": [
+                {
+                    "name": "MovementBehavior",
+                    "type": "keyboardMovement"
+                }
+            ]
+        },
+                {
+            "name": "cube",
+            "transform": {
+                "position": {
+                    "x": 0,
                     "y": 0,
                     "z": 0
                 },
@@ -19,6 +47,111 @@
             "components": [
                 {
                     "name": "cubeComponent",
+                    "type": "cube",
+                    "materialName": "cube"
+                }
+            ]
+        },
+        {
+            "name": "cube2",
+            "transform": {
+                "position": {
+                    "x": 1.1,
+                    "y": 0,
+                    "z": 0
+                },
+                "scale": {
+                    "x": 1,
+                    "y": 1
+                }
+            },
+            "components": [
+                {
+                    "name": "cubeComponent2",
+                    "type": "cube",
+                    "materialName": "cube"
+                }
+            ]
+        },
+        {
+            "name": "cube3",
+            "transform": {
+                "position": {
+                    "x": 2.2,
+                    "y": 0,
+                    "z": 0
+                },
+                "scale": {
+                    "x": 1,
+                    "y": 1
+                }
+            },
+            "components": [
+                {
+                    "name": "cubeComponent2",
+                    "type": "cube",
+                    "materialName": "cube"
+                }
+            ]
+        },
+        {
+            "name": "cube4",
+            "transform": {
+                "position": {
+                    "x": 0,
+                    "y": 0,
+                    "z": -1.1
+                },
+                "scale": {
+                    "x": 1,
+                    "y": 1
+                }
+            },
+            "components": [
+                {
+                    "name": "cubeComponent2",
+                    "type": "cube",
+                    "materialName": "cube"
+                }
+            ]
+        },
+        {
+            "name": "cube5",
+            "transform": {
+                "position": {
+                    "x": 1.1,
+                    "y": 0,
+                    "z": -1.1
+                },
+                "scale": {
+                    "x": 1,
+                    "y": 1
+                }
+            },
+            "components": [
+                {
+                    "name": "cubeComponent2",
+                    "type": "cube",
+                    "materialName": "cube"
+                }
+            ]
+        },
+        {
+            "name": "cube6",
+            "transform": {
+                "position": {
+                    "x": 2.2,
+                    "y": 0,
+                    "z": -1.1
+                },
+                "scale": {
+                    "x": 1,
+                    "y": 1
+                }
+            },
+            "components": [
+                {
+                    "name": "cubeComponent2",
                     "type": "cube",
                     "materialName": "cube"
                 }

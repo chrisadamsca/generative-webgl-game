@@ -45,7 +45,6 @@ export class GLBuffer {
                 throw new Error('Unrecognized data type: ' + dataType.toString());
                 break;
         }
-        console.warn(`## [Calling] gl.createBuffer()`);
         this._buffer = gl.createBuffer();
     }
 
@@ -61,10 +60,9 @@ export class GLBuffer {
         gl.bindBuffer(this._targetBufferType, this._buffer);
         
         if (this._hasAttributeLocation) {
-            // console.warn(`## [Calling] gl.bindBuffer(${this._targetBufferType}, this._buffer), ${this._data}`);
             for (const attribute of this._attributes) {
-                gl.vertexAttribPointer(attribute.location, attribute.size, this._dataType, normalized, this._stride, attribute.offset * this._typeSize);
                 gl.enableVertexAttribArray(attribute.location);
+                gl.vertexAttribPointer(attribute.location, attribute.size, this._dataType, normalized, this._stride, attribute.offset * this._typeSize);
             }
         }
     }
@@ -115,8 +113,6 @@ export class GLBuffer {
                 bufferData = new Int16Array(this._data);
                 break;
             case gl.UNSIGNED_SHORT:
-                console.warn('### Adding Uint16Array for elementarraybuffer', this._data);
-                
                 bufferData = new Uint16Array(this._data);
                 break;
             case gl.BYTE:
@@ -126,7 +122,6 @@ export class GLBuffer {
                 bufferData = new Uint8Array(this._data);
                 break;
         }
-        console.warn(`## [Calling] gl.bufferData(${this._targetBufferType}, ${bufferData}, gl.STATIC_DRAW)`);
         gl.bufferData(this._targetBufferType, bufferData, gl.STATIC_DRAW);
     }
 
@@ -134,7 +129,6 @@ export class GLBuffer {
         if (this._targetBufferType === gl.ARRAY_BUFFER) {
             gl.drawArrays(this._mode, 0, this._data.length / this._elementSize);
         } else if (this._targetBufferType === gl.ELEMENT_ARRAY_BUFFER) {
-            // console.warn(`## [Calling] gl.drawElements(${this._mode}, ${this._data.length}, ${this._dataType}, 0)`);
             gl.drawElements(this._mode, this._data.length, this._dataType, 0);
         }
     }

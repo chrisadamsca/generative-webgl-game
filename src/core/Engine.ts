@@ -104,9 +104,12 @@ export class Engine implements IMessageHandler{
         // Load Sounds
         // AudioManager.loadSoundFile('flap', '/assets/sounds/flap.mp3');
 
-        // this._projection = Matrix4x4.orthographic(0, this._canvas.width, this._canvas.height, 0, -1000.0, 1000.0);
+        // Setup light
+        const lightDirLocation = this._shader.getUniformLocation('uLightDirection');
+        gl.uniform3fv(lightDirLocation, [0, -5, -3]); // uniform 4 float (v vector)
 
-
+        const lightDiffuseLocation = this._shader.getUniformLocation('uLightDiffuse');
+        gl.uniform3fv(lightDiffuseLocation, [1, 0.8, 0.1]); // uniform 4 float (v vector)
 
         LevelManager.changeLevel(0);
 
@@ -138,17 +141,13 @@ export class Engine implements IMessageHandler{
 
         this._projection = mat4.perspective(this._projectionMatrix, 45, this._canvas.width / this._canvas.height, 0.1, 10000);
 
-        var cameraPosition = [2, 2, 4];
+        var cameraPosition = [-10, 10, 10];
         var up = [0, 1, 0];
         var target = [0, 0, 0];
         let viewMatrix = mat4.create();
         mat4.lookAt(viewMatrix, (cameraPosition as any), (target as any), (up as any));
 
         mat4.multiply(this._viewProjectionMatrix, this._projectionMatrix, viewMatrix);
-        if (this.log < 10) {
-            console.warn('uViewProjectionMatrix', this._viewProjectionMatrix)
-            this.log++;
-        }
 
         const projectionLocation = this._shader.getUniformLocation('uProjectionMatrix');
         gl.uniformMatrix4fv(projectionLocation, false, this._viewProjectionMatrix);

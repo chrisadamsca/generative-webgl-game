@@ -21,31 +21,29 @@ export class AdvancedShader extends Shader {
             uniform vec3 uMaterialDiffuse;
         
             in vec3 aVertexPosition;
-            // in vec3 aVertexNormal;
+            in vec3 aVertexNormal;
         
             out vec4 vVertexColor;
         
             void main(void) {
-            // Setting the vertex position
-            gl_Position = uProjectionMatrix * uModelViewMatrix * vec4(aVertexPosition, 1.0);
-
-            // Calculate the normal vector
-            // vec3 N = normalize(vec3(uNormalMatrix * vec4(aVertexNormal, 1.0)));
-            vec3 N = normalize(vec3(uNormalMatrix));
-        
-            // Normalized light direction
-            vec3 L = normalize(uLightDirection);
-        
-            // Dot product of the normal product and negative light direction vector
-            float lambertTerm = dot(N, -L);
-        
-            // Calculating the diffuse color based on the Lambertian reflection model
-            vec3 Id = uMaterialDiffuse * uLightDiffuse * lambertTerm;
-            // vec3 Id = uMaterialDiffuse * uLightDiffuse;
-        
-            // // Set the varying to be used inside of the fragment shader
-            vVertexColor = vec4(Id, 1.0);
+                // Calculate the normal vector
+                vec3 N = normalize(vec3(uNormalMatrix * vec4(aVertexNormal, 1.0)));
+            
+                // Normalized light direction
+                vec3 L = normalize(uLightDirection);
+            
+                // Dot product of the normal product and negative light direction vector
+                float lambertTerm = dot(N, -L);
+            
+                // Calculating the diffuse color based on the Lambertian reflection model
+                vec3 Id = uMaterialDiffuse * uLightDiffuse * lambertTerm;
+                // vec3 Id = uMaterialDiffuse * uLightDiffuse;
+            
+                // // Set the varying to be used inside of the fragment shader
+                vVertexColor = vec4(Id, 1.0);
     
+                // Setting the vertex position
+                gl_Position = uProjectionMatrix * uModelViewMatrix * vec4(aVertexPosition, 1.0);
             }
         `;
     }
@@ -53,7 +51,7 @@ export class AdvancedShader extends Shader {
     private getFragmentSource(): string {
         return glsl`#version 300 es
             precision mediump float;
-            
+
             // Expect the interpolated value fro, the vertex shader
             in vec4 vVertexColor;
         
@@ -61,9 +59,8 @@ export class AdvancedShader extends Shader {
             out vec4 fragColor;
         
             void main(void)  {
-            // Simply set the value passed in from the vertex shader
-            // fragColor = vVertexColor;
-            fragColor = vVertexColor;
+                // Simply set the value passed in from the vertex shader
+                fragColor = vVertexColor * vec4(1, 1, 1, 1);
             }
         `;
     }
