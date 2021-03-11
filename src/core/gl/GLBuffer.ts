@@ -115,6 +115,8 @@ export class GLBuffer {
                 bufferData = new Int16Array(this._data);
                 break;
             case gl.UNSIGNED_SHORT:
+                console.warn('### Adding Uint16Array for elementarraybuffer', this._data);
+                
                 bufferData = new Uint16Array(this._data);
                 break;
             case gl.BYTE:

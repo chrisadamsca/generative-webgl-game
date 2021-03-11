@@ -26,31 +26,75 @@ export class Cube {
     protected _materialName: string;
     protected _material: Material;
     protected _vertices: number[] = [	
-        0, 0, 0,
-        0, 0.5, 0,
-        0.5,-0.5, 0,
-        // -0.5, 0.5, 0.5,
-        // -0.5,-0.5, 0.5,
-        // 0.5,-0.5, 0.5,
-        // 0.5, 0.5, 0.5,
-        // 0.5,-0.5,-0.5,
-        // 0.5, 0.5,-0.5,
-        // -0.5,-0.5,-0.5,
-        // -0.5, 0.5, -0.5
+        // Front
+        -0.5, 0.5, 0.5,
+        -0.5,-0.5, 0.5,
+        0.5,-0.5, 0.5,
+
+        0.5,-0.5, 0.5,
+        0.5,0.5, 0.5,
+        -0.5,0.5, 0.5,
+
+        // Right
+        0.5, 0.5, 0.5,
+        0.5,-0.5, 0.5,
+        0.5,-0.5, -0.5,
+        
+        0.5,-0.5, -0.5,
+        0.5,0.5, -0.5,
+        0.5,0.5, 0.5,
+
+        // Back
+        -0.5, 0.5, -0.5,
+        -0.5,-0.5, -0.5,
+        0.5,-0.5, -0.5,
+
+        0.5,-0.5, -0.5,
+        0.5,0.5, -0.5,
+        -0.5,0.5, -0.5,
+        
+        // Top
+        -0.5, 0.5, -0.5,
+        -0.5,0.5, 0.5,
+        0.5,0.5, 0.5,
+        
+        0.5,0.5, 0.5,
+        0.5,0.5, -0.5,
+        -0.5, 0.5, -0.5,
+
+        // Left
+        -0.5, 0.5, 0.5,
+        -0.5,-0.5, 0.5,
+        -0.5,-0.5, -0.5,
+        
+        -0.5,-0.5, -0.5,
+        -0.5,0.5, -0.5,
+        -0.5,0.5, 0.5,
+
+        // Bottom
+        -0.5, -0.5, -0.5,
+        -0.5,-0.5, 0.5,
+        0.5,-0.5, 0.5,
+        
+        0.5,-0.5, 0.5,
+        0.5,-0.5, -0.5,
+        -0.5, -0.5, -0.5,
+
     ];
     protected _indeces: number[] = [
-        // Front
-        0,1,2,0,2,3,
-        // Right
-        3,2,4,3,4,5,
-        // Back
-        5,4,6,5,6,7,
-        // Top
-        0,3,7,7,3,5,
-        // Left
-        7,6,1,7,1,0,
-        // Bottom
-        1,6,4,1,4,2
+        0, 1, 2
+        // // Front
+        // 0,1,2,0,2,3,
+        // // Right
+        // 3,2,4,3,4,5,
+        // // Back
+        // 5,4,6,5,6,7,
+        // // Top
+        // 0,3,7,7,3,5,
+        // // Left
+        // 7,6,1,7,1,0,
+        // // Bottom
+        // 1,6,4,1,4,2
     ];
 
     protected _normals: number[] = [
@@ -151,23 +195,23 @@ export class Cube {
         this._verticesBuffer.upload();
 
 
-        // // Normals
-        // this._normalsBuffer = new GLBuffer();
-        // const normalAttributeInfo = new AttributeInfo();
-        // normalAttributeInfo.location = 0;
-        // normalAttributeInfo.size = 3;
-        // this._normalsBuffer.addAttributeLocation(normalAttributeInfo);
+        // Normals
+        this._normalsBuffer = new GLBuffer();
+        const normalAttributeInfo = new AttributeInfo();
+        normalAttributeInfo.location = 0;
+        normalAttributeInfo.size = 3;
+        this._normalsBuffer.addAttributeLocation(normalAttributeInfo);
 
 
-        // this._normalsBuffer.pushBackData(this._normals);
-        // this._normalsBuffer.upload();
+        this._normalsBuffer.pushBackData(this._normals);
+        this._normalsBuffer.upload();
 
-        // // Indeces
-        // this._indecesBuffer = new GLBuffer(gl.UNSIGNED_SHORT, gl.ELEMENT_ARRAY_BUFFER);
+        // Indeces
+        this._indecesBuffer = new GLBuffer(gl.UNSIGNED_SHORT, gl.ELEMENT_ARRAY_BUFFER);
 
 
-        // this._indecesBuffer.pushBackData(this._indeces);
-        // this._indecesBuffer.upload();
+        this._indecesBuffer.pushBackData(this._indeces);
+        this._indecesBuffer.upload();
 
         gl.bindVertexArray(null);
 

@@ -138,7 +138,7 @@ export class Engine implements IMessageHandler{
 
         this._projection = mat4.perspective(this._projectionMatrix, 45, this._canvas.width / this._canvas.height, 0.1, 10000);
 
-        var cameraPosition = [0, 0, 4];
+        var cameraPosition = [2, 2, 4];
         var up = [0, 1, 0];
         var target = [0, 0, 0];
         let viewMatrix = mat4.create();
