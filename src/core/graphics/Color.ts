@@ -71,6 +71,12 @@ export class Color {
     public toFloat32Array(): Float32Array {
         return new Float32Array(this.toFloatArray());
     }
+
+    public toVec3Float32Array(): Float32Array {
+        const arr = this.toFloatArray();
+        arr.splice(-1);
+        return new Float32Array(arr);
+    }
     
     public static white(): Color {
         return new Color(255, 255, 255, 255);

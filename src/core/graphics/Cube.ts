@@ -103,8 +103,12 @@ export class Cube {
         0, 0, 1,
         0, 0, 1,
         0, 0, 1,
+        0, 0, 1,
+        0, 0, 1,
 
         // Right
+        1, 0, 0,
+        1, 0, 0,
         1, 0, 0,
         1, 0, 0,
         1, 0, 0,
@@ -115,8 +119,12 @@ export class Cube {
         0, 0, -1,
         0, 0, -1,
         0, 0, -1,
+        0, 0, -1,
+        0, 0, -1,
 
         // Top
+        0, 1, 0,
+        0, 1, 0,
         0, 1, 0,
         0, 1, 0,
         0, 1, 0,
@@ -127,8 +135,12 @@ export class Cube {
         -1, 0, 0,
         -1, 0, 0,
         -1, 0, 0,
+        -1, 0, 0,
+        -1, 0, 0,
 
         // Bottom
+        0, -1, 0,
+        0, -1, 0,
         0, -1, 0,
         0, -1, 0,
         0, -1, 0,
@@ -237,48 +249,32 @@ export class Cube {
         const modelLocation = shader.getUniformLocation('uModelViewMatrix');
         gl.uniformMatrix4fv(modelLocation, false, testModelViewMatrix);
 
-        // const colorLocation = shader.getUniformLocation('uMaterialDiffuse');
-        // gl.uniform3fv(colorLocation, new Float32Array([0.0,1.0,0.0])); // uniform 4 float (v vector)
+        const colorLocation = shader.getUniformLocation('uMaterialDiffuse');
+        gl.uniform3fv(colorLocation, this._material.tint.toVec3Float32Array()); // uniform 4 float (v vector)
 
-        // const lightDirLocation = shader.getUniformLocation('uLightDirection');
-        // gl.uniform3fv(lightDirLocation, new Float32Array([-2.0, 0.0, -1.0])); // uniform 4 float (v vector)
+        const lightDirLocation = shader.getUniformLocation('uLightDirection');
+        gl.uniform3fv(lightDirLocation, new Float32Array([-2.0, 0.0, -1.0])); // uniform 4 float (v vector)
 
-        // const lightDiffuseLocation = shader.getUniformLocation('uLightDiffuse');
-        // gl.uniform3fv(lightDiffuseLocation, new Float32Array([1, 0.8, 0.8])); // uniform 4 float (v vector)
+        const lightDiffuseLocation = shader.getUniformLocation('uLightDiffuse');
+        gl.uniform3fv(lightDiffuseLocation, new Float32Array([1, 0.8, 0.8])); // uniform 4 float (v vector)
 
 
 
-        // let normalMatrix = mat4.create();
-        // mat4.copy(normalMatrix, testModelViewMatrix);
-        // mat4.invert(normalMatrix, normalMatrix);
-        // mat4.transpose(normalMatrix, normalMatrix);
-        // const normalLocation = shader.getUniformLocation('uNormalMatrix');
-        // gl.uniformMatrix4fv(normalLocation, false, normalMatrix); // uniform 4 float (v vector)
+        let normalMatrix = mat4.create();
+        mat4.copy(normalMatrix, testModelViewMatrix);
+        mat4.invert(normalMatrix, normalMatrix);
+        mat4.transpose(normalMatrix, normalMatrix);
 
-        // if (!this._done) {
-        //     // console.warn('modelViewMatrix: ', modelViewMatrix.toFloat32Array());
-        //     // console.warn('testModelViewMatrix: ', testModelViewMatrix);
-        //     // console.warn('tint: ', this._material.tint.toFloat32Array());
-        //     this._done = true;
-        // }
+        const normalLocation = shader.getUniformLocation('uNormalMatrix');
+        gl.uniformMatrix4fv(normalLocation, false, normalMatrix); // uniform 4 float (v vector)
+
+
 
         if (this.log < 10) {
             console.warn('uModelViewMatrix', testModelViewMatrix);
             // console.warn('uNormalMatrix', normalMatrix);
             this.log++;
         }
-
-        // const normalMatrix = mat4.create();
-        // mat4.invert(normalMatrix, mat4.fromValues(model.data[0], model.data[1], model.data[2], model.data[3], model.data[4], model.data[5], model.data[6], model.data[7], model.data[8], model.data[9], model.data[10], model.data[11], model.data[12], model.data[13], model.data[14], model.data[15]));
-        // mat4.transpose(normalMatrix, normalMatrix);
-        // const normalLocation = shader.getUniformLocation('u_normalMatrix');
-        // gl.uniformMatrix4fv(normalLocation, false, normalMatrix); // uniform 4 float (v vector)
-
-        // if (this._material.diffuseTexture !== undefined) {
-        //     this._material.diffuseTexture.activateAndBind(0);
-        // }
-        // const diffuseLocation = shader.getUniformLocation('u_diffuse');
-        // gl.uniform1i(diffuseLocation, 0);
         
         try {
             // Bind

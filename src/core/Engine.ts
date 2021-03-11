@@ -94,12 +94,12 @@ export class Engine implements IMessageHandler{
         gl.enable(gl.DEPTH_TEST);
 
         // Load Shaders
-        this._shader = new BasicShader();
+        this._shader = new AdvancedShader();
         this._shader.use()
 
         // Load Materials
         MaterialManager.registerMaterial(new Material('bg', '/assets/textures/bg.png', Color.white()));
-        MaterialManager.registerMaterial(new Material('cube', '/assets/textures/cube.png', Color.green()));
+        MaterialManager.registerMaterial(new Material('cube', '/assets/textures/cube.png', Color.white()));
 
         // Load Sounds
         // AudioManager.loadSoundFile('flap', '/assets/sounds/flap.mp3');

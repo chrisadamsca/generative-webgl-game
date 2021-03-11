@@ -21,13 +21,17 @@ export class AdvancedShader extends Shader {
             uniform vec3 uMaterialDiffuse;
         
             in vec3 aVertexPosition;
-            in vec3 aVertexNormal;
+            // in vec3 aVertexNormal;
         
             out vec4 vVertexColor;
         
             void main(void) {
+            // Setting the vertex position
+            gl_Position = uProjectionMatrix * uModelViewMatrix * vec4(aVertexPosition, 1.0);
+
             // Calculate the normal vector
-            vec3 N = normalize(vec3(uNormalMatrix * vec4(aVertexNormal, 1.0)));
+            // vec3 N = normalize(vec3(uNormalMatrix * vec4(aVertexNormal, 1.0)));
+            vec3 N = normalize(vec3(uNormalMatrix));
         
             // Normalized light direction
             vec3 L = normalize(uLightDirection);
@@ -37,12 +41,11 @@ export class AdvancedShader extends Shader {
         
             // Calculating the diffuse color based on the Lambertian reflection model
             vec3 Id = uMaterialDiffuse * uLightDiffuse * lambertTerm;
+            // vec3 Id = uMaterialDiffuse * uLightDiffuse;
         
-            // Set the varying to be used inside of the fragment shader
+            // // Set the varying to be used inside of the fragment shader
             vVertexColor = vec4(Id, 1.0);
-        
-            // Setting the vertex position
-            gl_Position = uProjectionMatrix * uModelViewMatrix * vec4(aVertexPosition, 1.0);
+    
             }
         `;
     }
@@ -59,6 +62,7 @@ export class AdvancedShader extends Shader {
         
             void main(void)  {
             // Simply set the value passed in from the vertex shader
+            // fragColor = vVertexColor;
             fragColor = vVertexColor;
             }
         `;
