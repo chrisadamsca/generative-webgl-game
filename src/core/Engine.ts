@@ -25,6 +25,7 @@ import { CubeComponentData } from "./components/CubeComponent";
 import { Vector3 } from "./math/Vector3";
 import { AdvancedShader } from "./gl/shaders/AdvancedShader";
 import { mat4 } from "gl-matrix";
+import { Shader } from "./gl/Shader";
 
 const tempWebpackFixToIncludeSpriteTS = new SpriteComponentData();
 const tempWebpackFixToIncludeAnimatedSpriteTS = new AnimatedSpriteComponentData();
@@ -39,7 +40,7 @@ const i = importMath;
 export class Engine implements IMessageHandler{
 
     private _canvas: HTMLCanvasElement;
-    private _basicShader: AdvancedShader;
+    private _shader: Shader;
     private _previousTime: number = 0;
     
     private _camera: Matrix4x4 = Matrix4x4.identity();
@@ -49,6 +50,8 @@ export class Engine implements IMessageHandler{
     private _projection: mat4;
     private _projectionMatrix: mat4 = mat4.create();
     private _viewProjectionMatrix: mat4 = mat4.create();
+
+    private log = 0;
 
     public constructor() {
         console.log('Engine created.');
@@ -85,13 +88,14 @@ export class Engine implements IMessageHandler{
 
         this._camera = Matrix4x4.multiply(this._camera, Matrix4x4.rotationXYZ(0, 0, 0));
 
-        gl.clearColor(0, 0, 1, 1);
-        gl.enable(gl.BLEND);
-        gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+        gl.clearColor(0.9, 0.9, 0.9, 1);
+        // gl.enable(gl.BLEND);
+        // gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+        gl.enable(gl.DEPTH_TEST);
 
         // Load Shaders
-        this._basicShader = new AdvancedShader();
-        this._basicShader.use()
+        this._shader = new BasicShader();
+        this._shader.use()
 
         // Load Materials
         MaterialManager.registerMaterial(new Material('bg', '/assets/textures/bg.png', Color.white()));
@@ -101,15 +105,7 @@ export class Engine implements IMessageHandler{
         // AudioManager.loadSoundFile('flap', '/assets/sounds/flap.mp3');
 
         // this._projection = Matrix4x4.orthographic(0, this._canvas.width, this._canvas.height, 0, -1000.0, 1000.0);
-        this._projection = mat4.perspective(this._projectionMatrix, 45, this._canvas.width / this._canvas.height, 0.1, 10000);
 
-        var cameraPosition = [0, 0, 4];
-        var up = [0, 1, 0];
-        var target = [0, 0, 0];
-        let viewMatrix = mat4.create();
-        mat4.lookAt(viewMatrix, (cameraPosition as any), (target as any), (up as any));
-
-        mat4.multiply(this._viewProjectionMatrix, this._projectionMatrix, viewMatrix);
 
 
         LevelManager.changeLevel(0);
@@ -140,10 +136,24 @@ export class Engine implements IMessageHandler{
     private render(): void {
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT); // ??? What is this? Resetting everything, but how?
 
-        LevelManager.render(this._basicShader);
+        this._projection = mat4.perspective(this._projectionMatrix, 45, this._canvas.width / this._canvas.height, 0.1, 10000);
 
-        const projectionLocation = this._basicShader.getUniformLocation('uProjectionMatrix');
+        var cameraPosition = [0, 0, 4];
+        var up = [0, 1, 0];
+        var target = [0, 0, 0];
+        let viewMatrix = mat4.create();
+        mat4.lookAt(viewMatrix, (cameraPosition as any), (target as any), (up as any));
+
+        mat4.multiply(this._viewProjectionMatrix, this._projectionMatrix, viewMatrix);
+        if (this.log < 10) {
+            console.warn('uViewProjectionMatrix', this._viewProjectionMatrix)
+            this.log++;
+        }
+
+        const projectionLocation = this._shader.getUniformLocation('uProjectionMatrix');
         gl.uniformMatrix4fv(projectionLocation, false, this._viewProjectionMatrix);
+
+        LevelManager.render(this._shader);
 
         requestAnimationFrame(() => this.loop());
     }

@@ -18,7 +18,7 @@ export class AdvancedShader extends Shader {
             uniform mat4 uNormalMatrix;
             uniform vec3 uLightDirection;
             uniform vec3 uLightDiffuse;
-            uniform vec4 uMaterialDiffuse;
+            uniform vec3 uMaterialDiffuse;
         
             in vec3 aVertexPosition;
             in vec3 aVertexNormal;
@@ -36,7 +36,7 @@ export class AdvancedShader extends Shader {
             float lambertTerm = dot(N, -L);
         
             // Calculating the diffuse color based on the Lambertian reflection model
-            vec3 Id = vec3(uMaterialDiffuse.rgb) * uLightDiffuse * lambertTerm;
+            vec3 Id = uMaterialDiffuse * uLightDiffuse * lambertTerm;
         
             // Set the varying to be used inside of the fragment shader
             vVertexColor = vec4(Id, 1.0);

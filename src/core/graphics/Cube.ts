@@ -21,17 +21,22 @@ export class Cube {
     protected _indecesBuffer: GLBuffer;
     protected _normalsBuffer: GLBuffer;
 
+    protected log = 0;
+
     protected _materialName: string;
     protected _material: Material;
     protected _vertices: number[] = [	
-        -0.5, 0.5, 0.5,
-        -0.5,-0.5, 0.5,
-        0.5,-0.5, 0.5,
-        0.5, 0.5, 0.5,
-        0.5,-0.5,-0.5,
-        0.5, 0.5,-0.5,
-        -0.5,-0.5,-0.5,
-        -0.5, 0.5, -0.5
+        0, 0, 0,
+        0, 0.5, 0,
+        0.5,-0.5, 0,
+        // -0.5, 0.5, 0.5,
+        // -0.5,-0.5, 0.5,
+        // 0.5,-0.5, 0.5,
+        // 0.5, 0.5, 0.5,
+        // 0.5,-0.5,-0.5,
+        // 0.5, 0.5,-0.5,
+        // -0.5,-0.5,-0.5,
+        // -0.5, 0.5, -0.5
     ];
     protected _indeces: number[] = [
         // Front
@@ -137,23 +142,36 @@ export class Cube {
         // Vertices
         this._verticesBuffer = new GLBuffer();
         const positionAttributeInfo = new AttributeInfo();
-        positionAttributeInfo.location = 1;
+        positionAttributeInfo.location = 0;
         positionAttributeInfo.size = 3;
         this._verticesBuffer.addAttributeLocation(positionAttributeInfo);
 
-        // Normals
-        this._normalsBuffer = new GLBuffer();
-        const normalAttributeInfo = new AttributeInfo();
-        normalAttributeInfo.location = 0;
-        normalAttributeInfo.size = 3;
-        this._normalsBuffer.addAttributeLocation(normalAttributeInfo);
 
-        // Indeces
-        this._indecesBuffer = new GLBuffer(gl.UNSIGNED_INT, gl.ELEMENT_ARRAY_BUFFER);
+        this._verticesBuffer.pushBackData(this._vertices);
+        this._verticesBuffer.upload();
+
+
+        // // Normals
+        // this._normalsBuffer = new GLBuffer();
+        // const normalAttributeInfo = new AttributeInfo();
+        // normalAttributeInfo.location = 0;
+        // normalAttributeInfo.size = 3;
+        // this._normalsBuffer.addAttributeLocation(normalAttributeInfo);
+
+
+        // this._normalsBuffer.pushBackData(this._normals);
+        // this._normalsBuffer.upload();
+
+        // // Indeces
+        // this._indecesBuffer = new GLBuffer(gl.UNSIGNED_SHORT, gl.ELEMENT_ARRAY_BUFFER);
+
+
+        // this._indecesBuffer.pushBackData(this._indeces);
+        // this._indecesBuffer.upload();
 
         gl.bindVertexArray(null);
 
-        this.calculateVertices();
+        // this.calculateVertices();
     }
 
     public update(time: number): void {
@@ -167,35 +185,43 @@ export class Cube {
         // uniform mat4 uModelViewMatrix;   [x]
         // uniform mat4 uNormalMatrix;      [x]
         // uniform vec3 uMaterialDiffuse;   [x]
-        // uniform vec3 uLightDirection;    [ ]
-        // uniform vec3 uLightDiffuse;      [ ]
+        // uniform vec3 uLightDirection;    [x]
+        // uniform vec3 uLightDiffuse;      [x]
+
+        const testModelViewMatrix = mat4.create();
 
         const modelLocation = shader.getUniformLocation('uModelViewMatrix');
-        gl.uniformMatrix4fv(modelLocation, false, modelViewMatrix.toFloat32Array());
+        gl.uniformMatrix4fv(modelLocation, false, testModelViewMatrix);
 
-        const colorLocation = shader.getUniformLocation('uMaterialDiffuse');
-        gl.uniform4fv(colorLocation, this._material.tint.toFloat32Array()); // uniform 4 float (v vector)
+        // const colorLocation = shader.getUniformLocation('uMaterialDiffuse');
+        // gl.uniform3fv(colorLocation, new Float32Array([0.0,1.0,0.0])); // uniform 4 float (v vector)
 
-        const lightDirLocation = shader.getUniformLocation('uLightDirection');
-        gl.uniform3fv(lightDirLocation, [-2, 0, -1]); // uniform 4 float (v vector)
+        // const lightDirLocation = shader.getUniformLocation('uLightDirection');
+        // gl.uniform3fv(lightDirLocation, new Float32Array([-2.0, 0.0, -1.0])); // uniform 4 float (v vector)
 
-        const lightDiffuseLocation = shader.getUniformLocation('uLightDiffuse');
-        gl.uniform3fv(lightDiffuseLocation, [1, 0.8, 0.8]); // uniform 4 float (v vector)
+        // const lightDiffuseLocation = shader.getUniformLocation('uLightDiffuse');
+        // gl.uniform3fv(lightDiffuseLocation, new Float32Array([1, 0.8, 0.8])); // uniform 4 float (v vector)
 
 
 
-        let normalMatrix = mat4.create();
-        mat4.copy(normalMatrix, modelViewMatrix.toFloat32Array());
-        mat4.invert(normalMatrix, normalMatrix);
-        mat4.transpose(normalMatrix, normalMatrix);
-        const normalLocation = shader.getUniformLocation('uNormalMatrix');
-        gl.uniformMatrix4fv(normalLocation, false, normalMatrix); // uniform 4 float (v vector)
+        // let normalMatrix = mat4.create();
+        // mat4.copy(normalMatrix, testModelViewMatrix);
+        // mat4.invert(normalMatrix, normalMatrix);
+        // mat4.transpose(normalMatrix, normalMatrix);
+        // const normalLocation = shader.getUniformLocation('uNormalMatrix');
+        // gl.uniformMatrix4fv(normalLocation, false, normalMatrix); // uniform 4 float (v vector)
 
-        if (!this._done) {
-            console.warn('modelViewMatrix: ', modelViewMatrix.toFloat32Array());
-            console.warn('modelViewMatrixGLMAt: ', modelViewMatrix.toGlMatrix());
-            console.warn('tint: ', this._material.tint.toFloat32Array());
-            this._done = true;
+        // if (!this._done) {
+        //     // console.warn('modelViewMatrix: ', modelViewMatrix.toFloat32Array());
+        //     // console.warn('testModelViewMatrix: ', testModelViewMatrix);
+        //     // console.warn('tint: ', this._material.tint.toFloat32Array());
+        //     this._done = true;
+        // }
+
+        if (this.log < 10) {
+            console.warn('uModelViewMatrix', testModelViewMatrix);
+            // console.warn('uNormalMatrix', normalMatrix);
+            this.log++;
         }
 
         // const normalMatrix = mat4.create();
@@ -213,8 +239,10 @@ export class Cube {
         try {
             // Bind
             gl.bindVertexArray(this._vertexArray);
-            this._indecesBuffer.bind();
-            this._indecesBuffer.draw();
+            this._verticesBuffer.bind();
+            this._verticesBuffer.draw(); 
+            this._verticesBuffer.unbind();
+            gl.bindVertexArray(null);
           }
           // We catch the `error` and simply output to the screen for testing/debugging purposes
           catch (error) {
@@ -224,17 +252,6 @@ export class Cube {
 
     protected calculateVertices(): void {
 
-        this._verticesBuffer.pushBackData(this._vertices);
-        this._verticesBuffer.upload();
-        this._verticesBuffer.unbind();
-
-        this._normalsBuffer.pushBackData(this._normals);
-        this._normalsBuffer.upload();
-        this._normalsBuffer.unbind();
-
-        this._indecesBuffer.pushBackData(this._indeces);
-        this._indecesBuffer.upload();
-        this._indecesBuffer.unbind();
 
 
     }

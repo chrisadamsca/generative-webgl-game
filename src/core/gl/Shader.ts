@@ -68,6 +68,11 @@ export abstract class Shader {
         gl.linkProgram(this._program);
 
         let error = gl.getProgramInfoLog(this._program).trim();
+        
+        if (!gl.getProgramParameter(this._program, gl.LINK_STATUS)) {
+            console.error('Could not initialize shaders');
+          }
+
         if (error !== "") {
             throw new Error(`Error linking shader ${this.name}: ${error}`);
         }
