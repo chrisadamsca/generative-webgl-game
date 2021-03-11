@@ -1,4 +1,4 @@
-export var gl: WebGLRenderingContext;
+export var gl: WebGL2RenderingContext;
 
 export class GLUtilities {
 

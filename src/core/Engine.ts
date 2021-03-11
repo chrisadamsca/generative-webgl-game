@@ -48,6 +48,7 @@ export class Engine implements IMessageHandler{
     // private _projection: Matrix4x4;
     private _projection: mat4;
     private _projectionMatrix: mat4 = mat4.create();
+    private _viewProjectionMatrix: mat4 = mat4.create();
 
     public constructor() {
         console.log('Engine created.');
@@ -102,6 +103,15 @@ export class Engine implements IMessageHandler{
         // this._projection = Matrix4x4.orthographic(0, this._canvas.width, this._canvas.height, 0, -1000.0, 1000.0);
         this._projection = mat4.perspective(this._projectionMatrix, 45, this._canvas.width / this._canvas.height, 0.1, 10000);
 
+        var cameraPosition = [0, 0, 4];
+        var up = [0, 1, 0];
+        var target = [0, 0, 0];
+        let viewMatrix = mat4.create();
+        mat4.lookAt(viewMatrix, (cameraPosition as any), (target as any), (up as any));
+
+        mat4.multiply(this._viewProjectionMatrix, this._projectionMatrix, viewMatrix);
+
+
         LevelManager.changeLevel(0);
 
         setTimeout(() => {
@@ -128,12 +138,12 @@ export class Engine implements IMessageHandler{
     }
 
     private render(): void {
-        gl.clear(gl.COLOR_BUFFER_BIT); // ??? What is this? Resetting everything, but how?
+        gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT); // ??? What is this? Resetting everything, but how?
 
         LevelManager.render(this._basicShader);
 
         const projectionLocation = this._basicShader.getUniformLocation('uProjectionMatrix');
-        gl.uniformMatrix4fv(projectionLocation, false, this._projection);
+        gl.uniformMatrix4fv(projectionLocation, false, this._viewProjectionMatrix);
 
         requestAnimationFrame(() => this.loop());
     }

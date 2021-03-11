@@ -71,7 +71,7 @@ export class Color {
     public toFloat32Array(): Float32Array {
         return new Float32Array(this.toFloatArray());
     }
-
+    
     public static white(): Color {
         return new Color(255, 255, 255, 255);
     }
