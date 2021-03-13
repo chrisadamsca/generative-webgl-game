@@ -4,6 +4,7 @@ import { ComponentManager } from "../components/ComponentManager";
 import { Shader } from "../gl/Shader";
 import { Vector3 } from "../math/Vector3";
 import { GameObject } from "./GameObject";
+import { LevelMap, MapTileType } from "./Map";
 import { Scene } from "./Scene";
 
 export enum LevelState {
@@ -20,6 +21,8 @@ export class Level {
     private _scene: Scene;
     private _state: LevelState = LevelState.UNINITIALIZED;
     private _globalId: number = -1;
+
+    private _map: LevelMap;
 
     public constructor(id: number, name: string, description: string) {
         this._id = id;
@@ -48,6 +51,87 @@ export class Level {
         if (levelData.objects === undefined) {
             throw new Error(`Level initialisation error: Objects not present.`);
         }
+
+        this._map = new LevelMap();
+        this._map.tiles.forEach((tile, index) => {
+            if (tile.type !== MapTileType.HOLE) {
+                let children = [];
+                // if (tile.type === MapTileType.POINT) {
+                //     children.push(        );
+                // }
+                this.loadGameObject({
+                    name: `ground_${index}` ,
+                    transform: {
+                        position: {
+                            x: tile.position.x,
+                            y: (tile.position.y + 0.5) - (tile.scale.y / 2),
+                            z: tile.position.z
+                        },
+                        scale: {
+                            y: tile.scale.y
+                        }
+                    },
+                    components: [
+                        {
+                            name: `ground_${index}`,
+                            type: 'cube',
+                            materialName: 'green',
+                            alpha: 1 - tile.lighten
+                        },
+                        {
+                            name: 'ground',
+                            type: 'collision',
+                            shape: {
+                                type: 'aabb',
+                                width: 1,
+                                height: 0.5,
+                                depth: 1
+                            }
+                        }
+                    ],
+                    children: children
+                }, this._scene.root);
+                if (tile.type === MapTileType.POINT) {
+                    this.loadGameObject({
+                        name: `key`,
+                        transform: {
+                            position: {
+                                x: tile.position.x,
+                                y: tile.position.y + 1,
+                                z: tile.position.z
+                            },
+                            scale: {
+                                x: 0.35,
+                                y: 0.35,
+                                z: 0.35
+                            }
+                        },
+                        components: [
+                            {
+                                name: `cubeComponent_${index}`,
+                                type: 'cube',
+                                materialName: 'blue'
+                            },
+                            {
+                                name: `key_${index}_Collision`,
+                                type: 'collision',
+                                shape: {
+                                    type: 'aabb',
+                                    width: 0.5,
+                                    height: 1,
+                                    depth: 0.5
+                                }
+                            },
+                            {
+                                name: `keyItem_${index}`,
+                                type: 'item',
+                                collisionName: `key_${index}_Collision`
+                            }
+                        ]
+                    }, this._scene.root);
+                }
+            }
+        });
 
         for (const key in levelData.objects) {
             const object = levelData.objects[key];

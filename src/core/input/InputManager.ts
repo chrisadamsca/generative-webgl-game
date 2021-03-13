@@ -6,6 +6,10 @@ export enum Keys {
     UP = 'ArrowUp',
     RIGHT = 'ArrowRight',
     DOWN = 'ArrowDown',
+    A = 'KeyA',
+    W = 'KeyW',
+    D = 'KeyD',
+    S = 'KeyS'
 }
 
 export class MouseContext {
@@ -56,6 +60,8 @@ export class InputManager {
 
     private static onKeyDown(event: KeyboardEvent): boolean {
         InputManager._keys[event.code] = true;
+        console.warn('key: ', event.code);
+        
         Message.send('KEY_DOWN', InputManager._keys[event.code]);
         return true;
         // event.preventDefault();
@@ -65,6 +71,7 @@ export class InputManager {
 
     private static onKeyUp(event: KeyboardEvent): boolean {
         InputManager._keys[event.code] = false;
+        Message.send('KEY_UP', InputManager._keys[event.code]);
         return true
         // event.preventDefault();
         // event.stopPropagation();

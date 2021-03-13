@@ -1,7 +1,8 @@
 import { Vector3 } from "../../math/Vector3";
+import { Circle2D } from "./Circle2D";
+import { IShape } from "./IShape";
 
-
-export class Box {
+export class Rectangle2D implements IShape {
 
     public position: Vector3 = Vector3.zero;
 
@@ -9,7 +10,6 @@ export class Box {
 
     public width: number;
     public height: number;
-    public depth: number;
 
     public get offset(): Vector3 {
         return new Vector3((this.width * this.origin.x), (this.height * this.origin.y));
@@ -25,27 +25,30 @@ export class Box {
         }
 
         if (json.width === undefined) {
-            throw new Error('Box requires width to be defined.')
+            throw new Error('Rectangle2D requires width to be defined.')
         }
         this.width = Number(json.width);
         
         if (json.height === undefined) {
-            throw new Error('Box requires height to be defined.')
+            throw new Error('Rectangle2D requires height to be defined.')
         }
         this.height = Number(json.height);
-
-        if (json.depth === undefined) {
-            throw new Error('Box requires depth to be defined.')
-        }
-        this.depth = Number(json.depth);
     }
 
-    public intersects(other: Box): boolean {
-        if (other instanceof Box) {
+    public intersects(other: IShape): boolean {
+        if (other instanceof Rectangle2D) {
             return (this.pointInShape(other.position) || 
                 this.pointInShape(new Vector3(other.position.x + other.width, other.position.y)) ||
                 this.pointInShape(new Vector3(other.position.x + other.width, other.position.y + other.height)) ||
                 this.pointInShape(new Vector3(other.position.x, other.position.y + other.height)) );
+        }
+
+        if (other instanceof Circle2D) {
+            const deltaX = other.position.x - Math.max(this.position.x, Math.min(other.position.x, this.position.x + this.width));
+            const deltaY = other.position.y - Math.max(this.position.y, Math.min(other.position.y, this.position.y + this.height));
+            if ((deltaX * deltaX + deltaY * deltaY) < (other.radius * other.radius)) {
+                return true;
+            }
         }
 
         return false;
@@ -55,10 +58,8 @@ export class Box {
         
         const x = this.width < 0 ? this.position.x - this.width : this.position.x;
         const y = this.height < 0 ? this.position.y - this.height : this.position.y;
-        const z = this.depth < 0 ? this.position.z - this.depth : this.position.z;
         const extentX = this.width < 0 ? this.position.x : this.position.x + this.width;
         const extentY = this.height < 0 ? this.position.y : this.position.y + this.height;
-        const extentZ = this.depth < 0 ? this.position.z : this.position.z + this.depth;
 
         if (point.x >= x && point.x <= extentX && point.y >= y && point.y <= extentY) {
             return true;

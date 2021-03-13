@@ -19,7 +19,8 @@ export class AdvancedShader extends Shader {
             uniform vec3 uLightDirection;
             uniform vec3 uLightDiffuse;
             uniform vec3 uMaterialDiffuse;
-        
+            uniform float uMaterialAlpha;
+            
             in vec3 aVertexPosition;
             in vec3 aVertexNormal;
         
@@ -40,7 +41,7 @@ export class AdvancedShader extends Shader {
                 // vec3 Id = uMaterialDiffuse * uLightDiffuse;
             
                 // // Set the varying to be used inside of the fragment shader
-                vVertexColor = vec4(Id, 1.0);
+                vVertexColor = vec4(Id, uMaterialAlpha);
     
                 // Setting the vertex position
                 gl_Position = uProjectionMatrix * uModelViewMatrix * vec4(aVertexPosition, 1.0);

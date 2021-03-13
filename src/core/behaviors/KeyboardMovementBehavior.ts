@@ -50,20 +50,21 @@ export class KeyboardMovementBehavior extends BaseBehavior {
     }
 
     public update(time: number): void {
-        if (InputManager.isKeyDown(Keys.LEFT)) {
-            this._owner.transform.position.x += this.speed;
+        if (InputManager.isKeyDown(Keys.LEFT) || InputManager.isKeyDown(Keys.A)) {
+            this._owner.transform.position.z += this.speed;
+            
         }
         
-        if (InputManager.isKeyDown(Keys.RIGHT)) {
+        if (InputManager.isKeyDown(Keys.RIGHT) || InputManager.isKeyDown(Keys.D)) {
+            this._owner.transform.position.z -= this.speed;
+        }
+        
+        if (InputManager.isKeyDown(Keys.UP) || InputManager.isKeyDown(Keys.W)) {
             this._owner.transform.position.x -= this.speed;
         }
-        
-        if (InputManager.isKeyDown(Keys.UP)) {
-            this._owner.transform.position.z += this.speed;
-        }
 
-        if (InputManager.isKeyDown(Keys.DOWN)) {
-            this._owner.transform.position.z -= this.speed;
+        if (InputManager.isKeyDown(Keys.DOWN) || InputManager.isKeyDown(Keys.S)) {
+            this._owner.transform.position.x += this.speed;
         }
 
         super.update(time);

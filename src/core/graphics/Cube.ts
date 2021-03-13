@@ -21,81 +21,10 @@ export class Cube {
     protected _indecesBuffer: GLBuffer;
     protected _normalsBuffer: GLBuffer;
 
-    protected log = 0;
-
     protected _materialName: string;
     protected _material: Material;
-    protected _vertices: number[] = [	
-        // Front 
-        -0.5, 0.5, 0.5, 0, 0, 1,
-        -0.5,-0.5, 0.5, 0, 0, 1,
-        0.5,-0.5, 0.5, 0, 0, 1,
- 
-        0.5,-0.5, 0.5, 0, 0, 1,
-        0.5,0.5, 0.5, 0, 0, 1,
-        -0.5,0.5, 0.5, 0, 0, 1,
- 
-        // Right 
-        0.5, 0.5, 0.5, 1, 0, 0,
-        0.5,-0.5, 0.5, 1, 0, 0,
-        0.5,-0.5, -0.5, 1, 0, 0,
-         
-        0.5,-0.5, -0.5, 1, 0, 0,
-        0.5,0.5, -0.5, 1, 0, 0,
-        0.5,0.5, 0.5, 1, 0, 0,
- 
-        // Back 
-        -0.5, 0.5, -0.5, 0, 0, -1,
-        -0.5,-0.5, -0.5, 0, 0, -1,
-        0.5,-0.5, -0.5, 0, 0, -1,
- 
-        0.5,-0.5, -0.5, 0, 0, -1,
-        0.5,0.5, -0.5, 0, 0, -1,
-        -0.5,0.5, -0.5, 0, 0, -1,
-         
-        // Top 
-        -0.5, 0.5, -0.5, 0, 1, 0,
-        -0.5,0.5, 0.5, 0, 1, 0,
-        0.5,0.5, 0.5, 0, 1, 0,
-         
-        0.5,0.5, 0.5, 0, 1, 0,
-        0.5,0.5, -0.5, 0, 1, 0,
-        -0.5, 0.5, -0.5, 0, 1, 0,
- 
-        // Left 
-        -0.5, 0.5, 0.5, -1, 0, 0,
-        -0.5,-0.5, 0.5, -1, 0, 0,
-        -0.5,-0.5, -0.5, -1, 0, 0,
-         
-        -0.5,-0.5, -0.5, -1, 0, 0,
-        -0.5,0.5, -0.5, -1, 0, 0,
-        -0.5,0.5, 0.5, -1, 0, 0,
- 
-        // Bottom 
-        -0.5, -0.5, -0.5, 0, -1, 0,
-        -0.5,-0.5, 0.5, 0, -1, 0,
-        0.5,-0.5, 0.5, 0, -1, 0,
-         
-        0.5,-0.5, 0.5, 0, -1, 0,
-        0.5,-0.5, -0.5, 0, -1, 0,
-        -0.5, -0.5, -0.5, 0, -1, 0,
-
-    ];
-    protected _indeces: number[] = [
-        // // Front
-        // 0,1,2,0,2,3,
-        // // Right
-        // 3,2,4,3,4,5,
-        // // Back
-        // 5,4,6,5,6,7,
-        // // Top
-        // 0,3,7,7,3,5,
-        // // Left
-        // 7,6,1,7,1,0,
-        // // Bottom
-        // 1,6,4,1,4,2
-    ];
-
+    protected _alpha: number = 1;
+    protected _vertices: number[];    
     protected _normals: number[] = [
         // Front
         0, 0, 1,
@@ -146,9 +75,7 @@ export class Cube {
         0, -1, 0,
     ];
 
-    protected _done: boolean = false;
-
-    public constructor(name: string, materialName: string, width: number = 10, height: number = 10, depth: number = 10) {
+    public constructor(name: string, materialName: string, width: number = 1, height: number = 1, depth: number = 1, alpha = 1) {
         this._name = name;
         this._width = width;
         this._height = height;
@@ -156,6 +83,7 @@ export class Cube {
         this._materialName = materialName;
 
         this._material = MaterialManager.getMaterial(this._materialName);
+        this._alpha = alpha;
     }
 
     public get name(): string {
@@ -168,6 +96,10 @@ export class Cube {
 
     public get height(): number {
         return this._height;
+    }
+
+    public get depth(): number {
+        return this._depth;
     }
 
     public get origin(): Vector3 {
@@ -191,7 +123,69 @@ export class Cube {
         this._vertexArray = gl.createVertexArray();
         gl.bindVertexArray(this._vertexArray);
         
+        const widthHalf = this._width / 2;
+        const heightHalf = this._height / 2;
+        const depthHalf = this._depth / 2;
+
         // Vertices
+        this._vertices = [	
+            // Front 
+            -widthHalf, heightHalf, depthHalf, 0, 0, 1,
+            -widthHalf,-heightHalf, depthHalf, 0, 0, 1,
+            widthHalf,-heightHalf, depthHalf, 0, 0, 1,
+     
+            widthHalf,-heightHalf, depthHalf, 0, 0, 1,
+            widthHalf,heightHalf, depthHalf, 0, 0, 1,
+            -widthHalf,heightHalf, depthHalf, 0, 0, 1,
+     
+            // Right 
+            widthHalf, heightHalf, depthHalf, 1, 0, 0,
+            widthHalf,-heightHalf, depthHalf, 1, 0, 0,
+            widthHalf,-heightHalf, -depthHalf, 1, 0, 0,
+             
+            widthHalf,-heightHalf, -depthHalf, 1, 0, 0,
+            widthHalf,heightHalf, -depthHalf, 1, 0, 0,
+            widthHalf,heightHalf, depthHalf, 1, 0, 0,
+     
+            // Back 
+            -widthHalf, heightHalf, -depthHalf, 0, 0, -1,
+            -widthHalf,-heightHalf, -depthHalf, 0, 0, -1,
+            widthHalf,-heightHalf, -depthHalf, 0, 0, -1,
+     
+            widthHalf,-heightHalf, -depthHalf, 0, 0, -1,
+            widthHalf,heightHalf, -depthHalf, 0, 0, -1,
+            -widthHalf,heightHalf, -depthHalf, 0, 0, -1,
+             
+            // Top 
+            -widthHalf, heightHalf, -depthHalf, 0, 1, 0,
+            -widthHalf,heightHalf, depthHalf, 0, 1, 0,
+            widthHalf,heightHalf, depthHalf, 0, 1, 0,
+             
+            widthHalf,heightHalf, depthHalf, 0, 1, 0,
+            widthHalf,heightHalf, -depthHalf, 0, 1, 0,
+            -widthHalf, heightHalf, -depthHalf, 0, 1, 0,
+     
+            // Left 
+            -widthHalf, heightHalf, depthHalf, -1, 0, 0,
+            -widthHalf,-heightHalf, depthHalf, -1, 0, 0,
+            -widthHalf,-heightHalf, -depthHalf, -1, 0, 0,
+             
+            -widthHalf,-heightHalf, -depthHalf, -1, 0, 0,
+            -widthHalf,heightHalf, -depthHalf, -1, 0, 0,
+            -widthHalf,heightHalf, depthHalf, -1, 0, 0,
+     
+            // Bottom 
+            -widthHalf, -heightHalf, -depthHalf, 0, -1, 0,
+            -widthHalf,-heightHalf, depthHalf, 0, -1, 0,
+            widthHalf,-heightHalf, depthHalf, 0, -1, 0,
+             
+            widthHalf,-heightHalf, depthHalf, 0, -1, 0,
+            widthHalf,-heightHalf, -depthHalf, 0, -1, 0,
+            -widthHalf, -heightHalf, -depthHalf, 0, -1, 0,
+    
+        ]
+
+
         this._verticesBuffer = new GLBuffer();
         const positionAttributeInfo = new AttributeInfo();
         positionAttributeInfo.location = 1;
@@ -222,6 +216,9 @@ export class Cube {
 
         const colorLocation = shader.getUniformLocation('uMaterialDiffuse');
         gl.uniform3fv(colorLocation, this._material.tint.toVec3Float32Array()); // uniform 4 float (v vector)
+
+        const alphaLocation = shader.getUniformLocation('uMaterialAlpha');
+        gl.uniform1f(alphaLocation, this._alpha); // uniform 4 float (v vector)
 
         // set normalMatrix attribute
         let normalMatrix = mat4.create();

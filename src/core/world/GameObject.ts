@@ -6,6 +6,17 @@ import { Transform } from "../math/Transform";
 import { Vector3 } from "../math/Vector3";
 import { Scene } from "./Scene";
 
+export class GameObjectManager {
+
+    private static _count: number = 0;
+
+
+    public static registerGameObject(): number {
+        return ++GameObjectManager._count;
+    }
+
+}
+
 export class GameObject {
 
     private _id: number;
@@ -13,6 +24,7 @@ export class GameObject {
     private _parent: GameObject;
     private _isLoaded: boolean = false;
     private _scene: Scene;
+
     private _components: IComponent[] = [];
     private _behaviors: IBehavior[] = [];
 
@@ -111,6 +123,15 @@ export class GameObject {
     public addBehavior(behavior: IBehavior): void {
         this._behaviors.push(behavior);
         behavior.setOwner(this);
+    }
+
+    public removeFromScene(): void {
+        this._components.forEach(component => {
+            if (component.type === 'cube') {
+                console.warn('!!!', component);
+                component.deactivate();
+            }
+        })
     }
 
     public load(): void {

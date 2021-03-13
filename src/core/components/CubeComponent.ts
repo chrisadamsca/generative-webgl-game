@@ -10,7 +10,9 @@ import { IComponentData } from "./IComponentData";
 export class CubeComponentData implements IComponentData {
 
     public name: string;
+    public type: string;
     public materialName: string;
+    public alpha: number;
     public origin: Vector3 = Vector3.zero;
     public width: number;
     public height: number;
@@ -19,6 +21,10 @@ export class CubeComponentData implements IComponentData {
     public setFromJSON(json: any): void {
         if (json.name !== undefined) {
             this.name = String(json.name);
+        }
+
+        if (json.type !== undefined) {
+            this.type = String(json.type);
         }
 
         if (json.width !== undefined) {
@@ -35,6 +41,10 @@ export class CubeComponentData implements IComponentData {
 
         if (json.materialName !== undefined) {
             this.materialName = String(json.materialName);
+        }
+
+        if (json.alpha !== undefined) {
+            this.alpha = Number(json.alpha);
         }
 
         if (json.origin !== undefined) {
@@ -73,7 +83,7 @@ export class CubeComponent extends BaseComponent {
         this._width = data.width;
         this._height = data.height;
 
-        this._cube = new Cube(data.name, data.materialName, this._width, this._height, this._height);
+        this._cube = new Cube(data.name, data.materialName, this._width, this._height, this._height, data.alpha);
         if (!data.origin.equals(Vector3.zero)) {
             this._cube.origin.copyFrom(data.origin);
         }
@@ -84,8 +94,10 @@ export class CubeComponent extends BaseComponent {
     }
 
     public render(shader: Shader): void {
-        this._cube.draw(shader, this.owner.worldMatrix);
-        super.render(shader);
+        if (this.active) {
+            this._cube.draw(shader, this.owner.worldMatrix);
+            super.render(shader);
+        }
     }
 
 }

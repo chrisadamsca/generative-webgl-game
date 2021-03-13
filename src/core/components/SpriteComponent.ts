@@ -14,10 +14,15 @@ export class SpriteComponentData implements IComponentData {
     public origin: Vector3 = Vector3.zero;
     public width: number;
     public height: number;
+    public type: string;
 
     public setFromJSON(json: any): void {
         if (json.name !== undefined) {
             this.name = String(json.name);
+        }
+
+        if (json.type !== undefined) {
+            this.type = String(json.type);
         }
 
         if (json.width !== undefined) {

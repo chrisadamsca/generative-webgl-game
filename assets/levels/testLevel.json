@@ -4,12 +4,12 @@
     "description": "A simple TestLevel for testing.",
     "objects": [
         {
-            "name": "cube",
+            "name": "player",
             "transform": {
                 "position": {
-                    "x": 0,
-                    "y": 1,
-                    "z": 0
+                    "x": -8.8,
+                    "y": 4.1,
+                    "z": 3.3
                 },
                 "scale": {
                     "x": 0.5,
@@ -21,139 +21,51 @@
                 {
                     "name": "cubeComponent",
                     "type": "cube",
-                    "materialName": "cube"
+                    "materialName": "red"
+                },
+                {
+                    "name": "playerCollision",
+                    "type": "collision",
+                    "static": false,
+                    "shape": {
+                        "type": "aabb",
+                        "width": 0.5,
+                        "height": 1.2,
+                        "depth": 0.5
+                    }
                 }
             ],
             "behaviors": [
                 {
-                    "name": "MovementBehavior",
-                    "type": "keyboardMovement"
+                    "name": "PlayerBehavior",
+                    "type": "player",
+                    "playerCollisionComponent": "playerCollision",
+                    "groundCollisionComponent": "ground"
                 }
-            ]
-        },
+            ],
+            "children": [
                 {
-            "name": "cube",
-            "transform": {
-                "position": {
-                    "x": 0,
-                    "y": 0,
-                    "z": 0
-                },
-                "scale": {
-                    "x": 1,
-                    "y": 1
-                }
-            },
-            "components": [
-                {
-                    "name": "cubeComponent",
-                    "type": "cube",
-                    "materialName": "cube"
-                }
-            ]
-        },
-        {
-            "name": "cube2",
-            "transform": {
-                "position": {
-                    "x": 1.1,
-                    "y": 0,
-                    "z": 0
-                },
-                "scale": {
-                    "x": 1,
-                    "y": 1
-                }
-            },
-            "components": [
-                {
-                    "name": "cubeComponent2",
-                    "type": "cube",
-                    "materialName": "cube"
-                }
-            ]
-        },
-        {
-            "name": "cube3",
-            "transform": {
-                "position": {
-                    "x": 2.2,
-                    "y": 0,
-                    "z": 0
-                },
-                "scale": {
-                    "x": 1,
-                    "y": 1
-                }
-            },
-            "components": [
-                {
-                    "name": "cubeComponent2",
-                    "type": "cube",
-                    "materialName": "cube"
-                }
-            ]
-        },
-        {
-            "name": "cube4",
-            "transform": {
-                "position": {
-                    "x": 0,
-                    "y": 0,
-                    "z": -1.1
-                },
-                "scale": {
-                    "x": 1,
-                    "y": 1
-                }
-            },
-            "components": [
-                {
-                    "name": "cubeComponent2",
-                    "type": "cube",
-                    "materialName": "cube"
-                }
-            ]
-        },
-        {
-            "name": "cube5",
-            "transform": {
-                "position": {
-                    "x": 1.1,
-                    "y": 0,
-                    "z": -1.1
-                },
-                "scale": {
-                    "x": 1,
-                    "y": 1
-                }
-            },
-            "components": [
-                {
-                    "name": "cubeComponent2",
-                    "type": "cube",
-                    "materialName": "cube"
-                }
-            ]
-        },
-        {
-            "name": "cube6",
-            "transform": {
-                "position": {
-                    "x": 2.2,
-                    "y": 0,
-                    "z": -1.1
-                },
-                "scale": {
-                    "x": 1,
-                    "y": 1
-                }
-            },
-            "components": [
-                {
-                    "name": "cubeComponent2",
-                    "type": "cube",
-                    "materialName": "cube"
+                    "name": "playerHead",
+                    "transform": {
+                        "position": {
+                            "x": 0,
+                            "y": 1,
+                            "z": 0
+                        },
+                        "scale": {
+                            "x": 0.25,
+                            "y": 0.25,
+                            "z": 0.25
+                        }
+                    },
+                    "components": [
+                        {
+                            "name": "cubeComponent",
+                            "type": "cube",
+                            "materialName": "red",
+                            "tint": [255, 255, 0]
+                        }
+                    ]
                 }
             ]
         }

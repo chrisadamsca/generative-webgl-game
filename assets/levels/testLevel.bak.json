@@ -1,0 +1,598 @@
+{
+    "name": "TestLevel",
+    "id": 0,
+    "description": "A simple TestLevel for testing.",
+    "map": [
+        0, 1, 3, 1, 0, 0, 1, 1, 1, 1,
+        0, 1, 1, 1, 1, 1, 0, 2, 1, 0,
+        0, 0, 0, 1, 1, 1, 1, 2, 2, 0,
+        0, 1, 1, 1, 1, 2, 2, 2, 2, 1,
+        0, 1, 1, 2, 2, 2, 1, 1, 1, 0,
+        0, 0, 1, 2, 1, 2, 2, 2, 0, 0,
+        0, 1, 1, 8, 1, 2, 1, 1, 1, 0
+    ],
+    "objects": [
+        {
+            "name": "player",
+            "transform": {
+                "position": {
+                    "x": 0,
+                    "y": 1.1,
+                    "z": 0
+                },
+                "scale": {
+                    "x": 0.5,
+                    "y": 0.5,
+                    "z": 0.5
+                }
+            },
+            "components": [
+                {
+                    "name": "cubeComponent",
+                    "type": "cube",
+                    "materialName": "red"
+                },
+                {
+                    "name": "playerCollision",
+                    "type": "collision",
+                    "static": false,
+                    "shape": {
+                        "type": "aabb",
+                        "width": 0.5,
+                        "height": 1.2,
+                        "depth": 0.5
+                    }
+                }
+            ],
+            "behaviors": [
+                {
+                    "name": "PlayerBehavior",
+                    "type": "player",
+                    "playerCollisionComponent": "playerCollision",
+                    "groundCollisionComponent": "ground"
+                }
+            ],
+            "children": [
+                {
+                    "name": "playerHead",
+                    "transform": {
+                        "position": {
+                            "x": 0,
+                            "y": 1,
+                            "z": 0
+                        },
+                        "scale": {
+                            "x": 0.25,
+                            "y": 0.25,
+                            "z": 0.25
+                        }
+                    },
+                    "components": [
+                        {
+                            "name": "cubeComponent",
+                            "type": "cube",
+                            "materialName": "red"
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "name": "key",
+            "transform": {
+                "position": {
+                    "x": 2.25,
+                    "y": 1.1,
+                    "z": 0
+                },
+                "scale": {
+                    "x": 0.35,
+                    "y": 0.35,
+                    "z": 0.35
+                }
+            },
+            "components": [
+                {
+                    "name": "cubeComponent",
+                    "type": "cube",
+                    "materialName": "green"
+                },
+                {
+                    "name": "keyCollision",
+                    "type": "collision",
+                    "shape": {
+                        "type": "aabb",
+                        "width": 0.5,
+                        "height": 1,
+                        "depth": 0.5
+                    }
+                },
+                {
+                    "name": "keyItem",
+                    "type": "item",
+                    "collisionName": "keyCollision"
+                }
+            ]
+        },
+        {
+            "name": "key2",
+            "transform": {
+                "position": {
+                    "x": 2.25,
+                    "y": 1.1,
+                    "z": 1
+                },
+                "scale": {
+                    "x": 0.35,
+                    "y": 0.35,
+                    "z": 0.35
+                }
+            },
+            "components": [
+                {
+                    "name": "cubeComponent",
+                    "type": "cube",
+                    "materialName": "green"
+                },
+                {
+                    "name": "key2Collision",
+                    "type": "collision",
+                    "shape": {
+                        "type": "aabb",
+                        "width": 0.5,
+                        "height": 1,
+                        "depth": 0.5
+                    }
+                },
+                {
+                    "name": "keyItem2",
+                    "type": "item",
+                    "collisionName": "key2Collision"
+                }
+            ]
+        },
+        {
+            "name": "cube",
+            "transform": {
+                "position": {
+                    "x": 0,
+                    "y": 0,
+                    "z": 0
+                },
+                "scale": {
+                    "x": 1,
+                    "y": 1
+                }
+            },
+            "components": [
+                {
+                    "name": "cubeComponent",
+                    "type": "cube",
+                    "materialName": "green"
+                },
+                {
+                    "name": "ground",
+                    "type": "collision",
+                    "shape": {
+                        "type": "aabb",
+                        "width": 1,
+                        "height": 1,
+                        "depth": 1
+                    }
+                }
+            ]
+        },
+        {
+            "name": "cube2",
+            "transform": {
+                "position": {
+                    "x": 1.1,
+                    "y": 1.1    ,
+                    "z": -1.1
+                },
+                "scale": {
+                    "x": 1,
+                    "y": 1
+                }
+            },
+            "components": [
+                {
+                    "name": "cubeComponent2",
+                    "type": "cube",
+                    "materialName": "cube"
+                },
+                {
+                    "name": "wallCollision",
+                    "type": "collision",
+                    "impenetrable": true,
+                    "shape": {
+                        "type": "aabb",
+                        "width": 1,
+                        "height": 1,
+                        "depth": 1
+                    }
+                }
+            ]
+        },
+        {
+            "name": "cube3",
+            "transform": {
+                "position": {
+                    "x": 2.2,
+                    "y": 0,
+                    "z": 0
+                },
+                "scale": {
+                    "x": 1,
+                    "y": 1
+                }
+            },
+            "components": [
+                {
+                    "name": "cubeComponent",
+                    "type": "cube",
+                    "materialName": "green"
+                },
+                {
+                    "name": "ground",
+                    "type": "collision",
+                    "shape": {
+                        "type": "aabb",
+                        "width": 1,
+                        "height": 1,
+                        "depth": 1
+                    }
+                }
+            ]
+        },
+        {
+            "name": "cube4",
+            "transform": {
+                "position": {
+                    "x": 0,
+                    "y": 0,
+                    "z": -1.1
+                },
+                "scale": {
+                    "x": 1,
+                    "y": 1
+                }
+            },
+            "components": [
+                {
+                    "name": "cubeComponent",
+                    "type": "cube",
+                    "materialName": "green"
+                },
+                {
+                    "name": "ground",
+                    "type": "collision",
+                    "shape": {
+                        "type": "aabb",
+                        "width": 1,
+                        "height": 1,
+                        "depth": 1
+                    }
+                }
+            ]
+        },
+        {
+            "name": "cube5",
+            "transform": {
+                "position": {
+                    "x": 1.1,
+                    "y": 0,
+                    "z": -1.1
+                },
+                "scale": {
+                    "x": 1,
+                    "y": 1
+                }
+            },
+            "components": [
+                {
+                    "name": "cubeComponent",
+                    "type": "cube",
+                    "materialName": "green"
+                },
+                {
+                    "name": "ground",
+                    "type": "collision",
+                    "shape": {
+                        "type": "aabb",
+                        "width": 1,
+                        "height": 1,
+                        "depth": 1
+                    }
+                }
+            ]
+        },
+        {
+            "name": "cube6",
+            "transform": {
+                "position": {
+                    "x": 2.2,
+                    "y": 0,
+                    "z": -1.1
+                }
+            },
+            "components": [
+                {
+                    "name": "cubeComponent",
+                    "type": "cube",
+                    "materialName": "green"
+                },
+                {
+                    "name": "ground",
+                    "type": "collision",
+                    "shape": {
+                        "type": "aabb",
+                        "width": 1,
+                        "height": 1,
+                        "depth": 1
+                    }
+                }
+            ]
+        },
+        {
+            "name": "cube6",
+            "transform": {
+                "position": {
+                    "x": 1.1,
+                    "y": 0,
+                    "z": -2.2
+                }
+            },
+            "components": [
+                {
+                    "name": "cubeComponent",
+                    "type": "cube",
+                    "materialName": "green"
+                },
+                {
+                    "name": "ground",
+                    "type": "collision",
+                    "shape": {
+                        "type": "aabb",
+                        "width": 1,
+                        "height": 1,
+                        "depth": 1
+                    }
+                }
+            ]
+        },
+        {
+            "name": "cube6",
+            "transform": {
+                "position": {
+                    "x": 0,
+                    "y": 0,
+                    "z": -2.2
+                }
+            },
+            "components": [
+                {
+                    "name": "cubeComponent",
+                    "type": "cube",
+                    "materialName": "green"
+                },
+                {
+                    "name": "ground",
+                    "type": "collision",
+                    "shape": {
+                        "type": "aabb",
+                        "width": 1,
+                        "height": 1,
+                        "depth": 1
+                    }
+                }
+            ]
+        },
+        {
+            "name": "cube6",
+            "transform": {
+                "position": {
+                    "x": -1.1,
+                    "y": 0,
+                    "z": -2.2
+                }
+            },
+            "components": [
+                {
+                    "name": "cubeComponent",
+                    "type": "cube",
+                    "materialName": "green"
+                },
+                {
+                    "name": "ground",
+                    "type": "collision",
+                    "shape": {
+                        "type": "aabb",
+                        "width": 1,
+                        "height": 1,
+                        "depth": 1
+                    }
+                }
+            ]
+        },
+        {
+            "name": "cube6",
+            "transform": {
+                "position": {
+                    "x": 2.2,
+                    "y": 0,
+                    "z": 1.1
+                }
+            },
+            "components": [
+                {
+                    "name": "cubeComponent",
+                    "type": "cube",
+                    "materialName": "green"
+                },
+                {
+                    "name": "ground",
+                    "type": "collision",
+                    "shape": {
+                        "type": "aabb",
+                        "width": 1,
+                        "height": 1,
+                        "depth": 1
+                    }
+                }
+            ]
+        },
+        {
+            "name": "cube6",
+            "transform": {
+                "position": {
+                    "x": 1.1,
+                    "y": 0,
+                    "z": 1.1
+                }
+            },
+            "components": [
+                {
+                    "name": "cubeComponent",
+                    "type": "cube",
+                    "materialName": "green"
+                },
+                {
+                    "name": "ground",
+                    "type": "collision",
+                    "shape": {
+                        "type": "aabb",
+                        "width": 1,
+                        "height": 1,
+                        "depth": 1
+                    }
+                }
+            ]
+        },
+        {
+            "name": "cube6",
+            "transform": {
+                "position": {
+                    "x": 3.3,
+                    "y": 0,
+                    "z": 1.1
+                }
+            },
+            "components": [
+                {
+                    "name": "cubeComponent",
+                    "type": "cube",
+                    "materialName": "green"
+                },
+                {
+                    "name": "ground",
+                    "type": "collision",
+                    "shape": {
+                        "type": "aabb",
+                        "width": 1,
+                        "height": 1,
+                        "depth": 1
+                    }
+                }
+            ]
+        },
+        {
+            "name": "cube6",
+            "transform": {
+                "position": {
+                    "x": 3.3,
+                    "y": 0,
+                    "z": 0
+                }
+            },
+            "components": [
+                {
+                    "name": "cubeComponent",
+                    "type": "cube",
+                    "materialName": "green"
+                },
+                {
+                    "name": "ground",
+                    "type": "collision",
+                    "shape": {
+                        "type": "aabb",
+                        "width": 1,
+                        "height": 1,
+                        "depth": 1
+                    }
+                }
+            ]
+        },
+        {
+            "name": "cube6",
+            "transform": {
+                "position": {
+                    "x": 3.3,
+                    "y": 0,
+                    "z": -1.1
+                }
+            },
+            "components": [
+                {
+                    "name": "cubeComponent2",
+                    "type": "cube",
+                    "materialName": "cube"
+                }
+            ]
+        },
+        {
+            "name": "cube6",
+            "transform": {
+                "position": {
+                    "x": 3.3,
+                    "y": 0,
+                    "z": -2.2
+                }
+            },
+            "components": [
+                {
+                    "name": "cubeComponent",
+                    "type": "cube",
+                    "materialName": "green"
+                },
+                {
+                    "name": "ground",
+                    "type": "collision",
+                    "shape": {
+                        "type": "aabb",
+                        "width": 1,
+                        "height": 1,
+                        "depth": 1
+                    }
+                }
+            ]
+        },
+        {
+            "name": "cube6",
+            "transform": {
+                "position": {
+                    "x": 4.4,
+                    "y": 0,
+                    "z": -1.1
+                }
+            },
+            "components": [
+                {
+                    "name": "cubeComponent",
+                    "type": "cube",
+                    "materialName": "green"
+                },
+                {
+                    "name": "ground",
+                    "type": "collision",
+                    "shape": {
+                        "type": "aabb",
+                        "width": 1,
+                        "height": 1,
+                        "depth": 1
+                    }
+                }
+            ]
+        }
+    ]
+}

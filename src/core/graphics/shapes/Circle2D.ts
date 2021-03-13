@@ -1,17 +1,17 @@
-import { Vector2 } from "../../math/Vector2";
-import { IShape2D } from "./IShape2d";
+import { Vector3 } from "../../math/Vector3";
+import { IShape } from "./IShape";
 import { Rectangle2D } from "./Rectangle2d";
 
-export class Circle2D implements IShape2D {
+export class Circle2D implements IShape {
 
-    public position: Vector2 = Vector2.zero;
+    public position: Vector3 = Vector3.zero;
 
-    public origin: Vector2 = Vector2.zero;
+    public origin: Vector3 = Vector3.zero;
 
     public radius: number;
 
-    public get offset(): Vector2 {
-        return new Vector2(this.radius + (this.radius * this.origin.x), this.radius + (this.radius * this.origin.y));
+    public get offset(): Vector3 {
+        return new Vector3(this.radius + (this.radius * this.origin.x), this.radius + (this.radius * this.origin.y));
     }
 
     public setFromJson(json: any): void {
@@ -29,10 +29,10 @@ export class Circle2D implements IShape2D {
         this.radius = Number(json.radius);
     }
 
-    public intersects(other: IShape2D): boolean {
+    public intersects(other: IShape): boolean {
 
         if (other instanceof Circle2D) {
-            const distance = Math.abs(Vector2.distance(other.position, this.position));
+            const distance = Math.abs(Vector3.distance(other.position, this.position));
             const radiusLengths = this.radius + other.radius;
             if (distance <= radiusLengths) {
                 return true;
@@ -50,9 +50,9 @@ export class Circle2D implements IShape2D {
         return false;
     }
 
-    public pointInShape(point: Vector2): boolean {
+    public pointInShape(point: Vector3): boolean {
 
-        const absDistance = Math.abs(Vector2.distance(this.position, point));
+        const absDistance = Math.abs(Vector3.distance(this.position, point));
         if (absDistance <= this.radius) {
             return true
         }

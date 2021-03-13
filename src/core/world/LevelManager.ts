@@ -19,7 +19,6 @@ export class LevelManager implements IMessageHandler {
         LevelManager._inst = new LevelManager();
         // TODO: TEMP
         LevelManager._registeredLevels[0] = '/assets/levels/testLevel.json';
-
     }
 
     public static changeLevel(id: number): void {
