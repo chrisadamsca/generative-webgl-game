@@ -103,6 +103,7 @@ export class Engine implements IMessageHandler{
         // Load Materials
         MaterialManager.registerMaterial(new Material('bg', '/assets/textures/bg.png', Color.white()));
         MaterialManager.registerMaterial(new Material('cube', '/assets/textures/cube.png', Color.white()));
+        MaterialManager.registerMaterial(new Material('white', '/assets/textures/cube.png', Color.white()));
         MaterialManager.registerMaterial(new Material('red', '/assets/textures/cube.png', new Color(253, 154, 158)));
         MaterialManager.registerMaterial(new Material('green', '/assets/textures/cube.png', new Color(176, 208, 211)));
         MaterialManager.registerMaterial(new Material('blue', '/assets/textures/cube.png', new Color(247, 175, 157)));
@@ -149,8 +150,9 @@ export class Engine implements IMessageHandler{
 
         // const cameraPosition = [-12, 12, 10];
         const cameraPosition: vec3 = vec3.create();
-        vec3.set(cameraPosition, 0, 17, 0.00001);
-        vec3.rotateY(cameraPosition, cameraPosition, vec3.create(), (Math.PI / 2) * 4);
+        vec3.set(cameraPosition, 0, 20, 0.00001);
+        vec3.rotateX(cameraPosition, cameraPosition, vec3.create(), (Math.PI / 5) );
+        // vec3.rotateY(cameraPosition, cameraPosition, vec3.create(), -(Math.PI / 4));
         const up = [0, 1, 0];
         const target = [0, 0, 0];
         const viewMatrix = mat4.create();

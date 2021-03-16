@@ -22,7 +22,7 @@ export class ComponentManager {
     }
 
     public static registerComponent(): number{
-        return ++ComponentManager._componentCount;
+        return ComponentManager._componentCount++;
     }
 
 }

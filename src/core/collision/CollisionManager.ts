@@ -27,10 +27,11 @@ export class CollisionManager {
     }
 
     public static unRegisterCollisionComponent(component: CollisionComponent): void{
+        
         const index = CollisionManager._components.indexOf(component);
-
+        
         if (index !== -1) {
-            CollisionManager._components.slice(index, 1);
+            CollisionManager._components.splice(index, 1);
         }
     }
 
@@ -51,8 +52,8 @@ export class CollisionManager {
                 
                 if (comp.isStatic && other.isStatic) continue;
                 
-                if (comp.shape.intersects(other.shape)) {
-                    
+                if (comp.shape.intersects(other.shape)) {       
+                    // console.warn(`COLLISION ${comp.uuid} | ${other.uuid}`);             
                     let exists: boolean = false;
                     for (let d = 0; d < CollisionManager._collisionData.length; d++) {
                         const data = CollisionManager._collisionData[d];
@@ -71,7 +72,7 @@ export class CollisionManager {
                         const collision = new CollisionData(CollisionManager._totalTime, comp, other);
                         comp.onCollisionEntry(other);
                         other.onCollisionEntry(comp);
-                        console.warn('COLLISION: ', comp.name, other.name);
+                        // console.warn('COLLISION: ', comp.name, other.name);
                         Message.sendPrio('COLLISION_ENTRY::' + comp.name, this, collision);
                         Message.sendPrio('COLLISION_ENTRY::' + other.name, this, collision);
                         CollisionManager._collisionData.push(collision);

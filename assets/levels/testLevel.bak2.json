@@ -7,8 +7,8 @@
             "name": "player",
             "transform": {
                 "position": {
-                    "x": -0.5,
-                    "y": 2.5,
+                    "x": 0,
+                    "y": 2.6,
                     "z": 4.4
                 },
                 "scale": {
@@ -30,7 +30,7 @@
                     "shape": {
                         "type": "aabb",
                         "width": 1,
-                        "height": 1,
+                        "height": 1.5,
                         "depth": 1
                     }
                 }
@@ -41,6 +41,31 @@
                     "type": "player",
                     "playerCollisionComponent": "playerCollision",
                     "groundCollisionComponent": "ground"
+                }
+            ],
+            "children": [
+                {
+                    "name": "playerHead",
+                    "transform": {
+                        "position": {
+                            "x": 0,
+                            "y": 1,
+                            "z": 0
+                        },
+                        "scale": {
+                            "x": 0.25,
+                            "y": 0.25,
+                            "z": 0.25
+                        }
+                    },
+                    "components": [
+                        {
+                            "name": "cubeComponent",
+                            "type": "cube",
+                            "materialName": "red",
+                            "tint": [255, 255, 0]
+                        }
+                    ]
                 }
             ]
         }

@@ -3,7 +3,9 @@ import { BehaviorManager } from "../behaviors/BehaviorManager";
 import { ComponentManager } from "../components/ComponentManager";
 import { Shader } from "../gl/Shader";
 import { Vector3 } from "../math/Vector3";
-import { GameObject } from "./GameObject";
+import { IMessageHandler } from "../message/IMessageHandler";
+import { Message } from "../message/Message";
+import { GameObject, GameObjectManager } from "./GameObject";
 import { LevelMap, MapTileType } from "./Map";
 import { Scene } from "./Scene";
 
@@ -13,7 +15,7 @@ export enum LevelState {
     UPDATING
 }
 
-export class Level {
+export class Level implements IMessageHandler {
     
     private _id: number;
     private _name: string;
@@ -22,6 +24,7 @@ export class Level {
     private _state: LevelState = LevelState.UNINITIALIZED;
     private _globalId: number = -1;
 
+    private _collectedPoints: number = 0;
     private _map: LevelMap;
 
     public constructor(id: number, name: string, description: string) {
@@ -47,50 +50,114 @@ export class Level {
         return this._scene;
     }
 
+    public onMessage(message: Message): void {
+        if (message.code === 'POINT::' + this._id) {
+            this._collectedPoints++;
+            console.warn(`[POINT COLLECTED] ${this._collectedPoints} / ${this._map.pointsTotal}`)
+            if (this._collectedPoints === this._map.pointsTotal) {
+                Message.send('LEVEL_WON::' + this._id, this);
+                alert('You WON!');
+            }
+        }
+    }
+
     public initialize(levelData: any): void {
+        Message.subscribe('POINT::' + this._id, this);
+
         if (levelData.objects === undefined) {
             throw new Error(`Level initialisation error: Objects not present.`);
         }
+        // for (const key in levelData.objects) {
+        //     const object = levelData.objects[key];
+        //     this.loadGameObject(object, this._scene.root);
+        // }
 
         this._map = new LevelMap();
         this._map.tiles.forEach((tile, index) => {
             if (tile.type !== MapTileType.HOLE) {
-                let children = [];
-                // if (tile.type === MapTileType.POINT) {
-                //     children.push(        );
-                // }
-                this.loadGameObject({
-                    name: `ground_${index}` ,
-                    transform: {
-                        position: {
-                            x: tile.position.x,
-                            y: (tile.position.y + 0.5) - (tile.scale.y / 2),
-                            z: tile.position.z
-                        },
-                        scale: {
-                            y: tile.scale.y
-                        }
-                    },
-                    components: [
-                        {
-                            name: `ground_${index}`,
-                            type: 'cube',
-                            materialName: 'green',
-                            alpha: 1 - tile.lighten
-                        },
-                        {
-                            name: 'ground',
-                            type: 'collision',
-                            shape: {
-                                type: 'aabb',
-                                width: 1,
-                                height: 0.5,
-                                depth: 1
+                    this.loadGameObject({
+                        name: `ground_${index}` ,
+                        transform: {
+                            position: {
+                                x: tile.position.x,
+                                // y: tile.position.y,
+                                y: tile.position.y - (tile.scale.y / 2) + 0.5,
+                                z: tile.position.z
+                            },
+                            scale: {
+                                x: 0.8,
+                                y: tile.scale.y,
+                                z: 0.8
                             }
-                        }
-                    ],
-                    children: children
-                }, this._scene.root);
+                        },
+                        components: [
+                            {
+                                name: `groundCube_${index}`,
+                                type: 'cube',
+                                materialName: tile.partOfMain ? 'red' : 'green',
+                                alpha: tile.partOfMain ? 1 : (1 - tile.lighten)
+                            },
+                            {
+                                name: 'groundCollision',
+                                type: 'collision',
+                                shape: {
+                                    type: 'aabb',
+                                    width: 0.8,
+                                    height: tile.scale.y + 0.2,
+                                    depth: 0.8
+                                }
+                            }
+                        ]
+                    }, this._scene.root);
+                if (tile.type === MapTileType.START) {
+                    this.loadGameObject({
+                        name: 'player',
+                        transform: {
+                            position: {
+                                x: tile.position.x,
+                                y: tile.position.y + 1.1,
+                                z: tile.position.z
+                            },
+                            scale: {
+                                x: 0.5,
+                                y: 1,
+                                z: 0.5
+                            }
+                        },
+                        components: [
+                            {
+                                name: 'playerBody',
+                                type: 'cube',
+                                materialName: 'white'
+                            },
+                            {
+                                name: 'playerCollision',
+                                type: 'collision',
+                                static: false,
+                                shape: {
+                                    type: 'aabb',
+                                    width: 0.5,
+                                    height: 1,
+                                    depth: 0.5
+                                }
+                            }
+                        ],
+                        behaviors: [
+                            {
+                                name: 'PlayerBehavior',
+                                type: 'player',
+                                playerCollisionComponent: 'playerCollision',
+                                groundCollisionComponent: 'groundCollision',
+                                speed: 0.075,
+                                resetPosition: {
+                                    x: tile.position.x,
+                                    y: tile.position.y + 1.1,
+                                    z: tile.position.z
+                                }
+                            }
+                        ]
+                    }, this._scene.root);
+                }
                 if (tile.type === MapTileType.POINT) {
                     this.loadGameObject({
                         name: `key`,
@@ -101,16 +168,20 @@ export class Level {
                                 z: tile.position.z
                             },
                             scale: {
-                                x: 0.35,
-                                y: 0.35,
-                                z: 0.35
+                                x: 0.25,
+                                y: 0.25,
+                                z: 0.25
+                            },
+                            rotation: {
+                                // x: Math.PI / 4,
+                                y: -Math.PI / 4
                             }
                         },
                         components: [
                             {
                                 name: `cubeComponent_${index}`,
                                 type: 'cube',
-                                materialName: 'blue'
+                                materialName: 'green'
                             },
                             {
                                 name: `key_${index}_Collision`,
@@ -132,18 +203,13 @@ export class Level {
                 }
             }
         });
-
-        for (const key in levelData.objects) {
-            const object = levelData.objects[key];
-            this.loadGameObject(object, this._scene.root);
-        }
     }
 
     public load(): void {
         this._state = LevelState.LOADING;
 
         this._scene.load();
-        // this._scene.root.transform.rotation = new Vector3(-Math.PI / 2, Math.PI / 4, 0)
+
         this._scene.root.updateReady();
 
         this._state = LevelState.UPDATING;

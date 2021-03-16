@@ -6,6 +6,7 @@ import { IShape } from "../graphics/shapes/IShape";
 import { Rectangle2D } from "../graphics/shapes/Rectangle2d";
 import { IMessageHandler } from "../message/IMessageHandler";
 import { Message } from "../message/Message";
+import { LevelManager } from "../world/LevelManager";
 import { BaseComponent } from "./BaseComponent";
 import { CollisionComponent } from "./CollisionComponent";
 import { ComponentManager } from "./ComponentManager";
@@ -72,8 +73,9 @@ export class ItemComponent extends BaseComponent implements IMessageHandler {
                 
                 const data: CollisionData = message.context as CollisionData;
                 if (data.a.name === 'playerCollision' || data.b.name === 'playerCollision') {
-                    console.warn('Collecting item: ', data.b.owner.name);
+                    // console.warn('Collecting item: ', data.b.owner.name);
                     this.owner.removeFromScene();
+                    Message.send('POINT::' + LevelManager.activeLevel.id, this);
                 }
                 break;
             default:

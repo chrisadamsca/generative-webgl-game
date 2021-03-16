@@ -60,7 +60,6 @@ export class InputManager {
 
     private static onKeyDown(event: KeyboardEvent): boolean {
         InputManager._keys[event.code] = true;
-        console.warn('key: ', event.code);
         
         Message.send('KEY_DOWN', InputManager._keys[event.code]);
         return true;

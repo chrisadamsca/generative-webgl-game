@@ -15,6 +15,10 @@ export class LevelManager implements IMessageHandler {
     
     private constructor() {}
 
+    public static get activeLevel(): Level {
+        return LevelManager._activeLevel;
+    }
+
     public static initialize(): void {
         LevelManager._inst = new LevelManager();
         // TODO: TEMP

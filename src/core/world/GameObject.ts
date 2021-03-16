@@ -127,10 +127,7 @@ export class GameObject {
 
     public removeFromScene(): void {
         this._components.forEach(component => {
-            if (component.type === 'cube') {
-                console.warn('!!!', component);
-                component.deactivate();
-            }
+            component.deactivate();
         })
     }
 

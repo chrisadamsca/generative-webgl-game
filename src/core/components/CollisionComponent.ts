@@ -16,7 +16,6 @@ export class CollisionComponentData implements IComponentData {
     public type: string;
     public shape: IShape;
     public static: boolean = true;
-    public impenetrable: boolean;
 
     public setFromJSON(json: any): void {
         if (json.name === undefined) {
@@ -32,10 +31,6 @@ export class CollisionComponentData implements IComponentData {
 
         if (json.static !== undefined) {
             this.static = Boolean(json.static);
-        }
-
-        if (json.impenetrable !== undefined) {
-            this.impenetrable = Boolean(json.impenetrable);
         }
 
         if (json.shape === undefined) {
@@ -88,14 +83,12 @@ export class CollisionComponent extends BaseComponent {
     
     private _shape: IShape;
     private _static: boolean;
-    private _impenetrable: boolean = false;
 
     public constructor(data: CollisionComponentData) {
         super(data);
 
         this._shape = data.shape;
         this._static = data.static;
-        this._impenetrable = data.impenetrable;
     }
 
     public get shape(): IShape {
@@ -104,10 +97,6 @@ export class CollisionComponent extends BaseComponent {
 
     public get isStatic(): boolean {
         return this._static;
-    }
-
-    public get isImpenetrable(): boolean {
-        return this._impenetrable;
     }
 
     public load(): void {
@@ -131,8 +120,18 @@ export class CollisionComponent extends BaseComponent {
         super.render(shader);
     }
 
+    public deactivate(): void {
+        super.deactivate();
+        CollisionManager.unRegisterCollisionComponent(this);
+    }
+
+    public activate(): void {
+        super.activate();
+        CollisionManager.registerCollisionComponent(this);
+    }
+
     public onCollisionEntry(other: CollisionComponent): void {
-        
+
     }
     
     public onCollisionUpdate(other: CollisionComponent): void {
