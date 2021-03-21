@@ -125,12 +125,6 @@ export class GameObject {
         behavior.setOwner(this);
     }
 
-    public removeFromScene(): void {
-        this._components.forEach(component => {
-            component.deactivate();
-        })
-    }
-
     public load(): void {
         this._isLoaded = true;
 
@@ -140,6 +134,18 @@ export class GameObject {
 
         for (const child of this._children) {
             child.load();
+        }
+    }
+
+    public unload(): void {
+        this._isLoaded = false;
+
+        for (const component of this._components) {
+            component.unload();
+        }
+
+        for (const child of this._children) {
+            child.unload();
         }
     }
 

@@ -4,8 +4,11 @@ import { ComponentManager } from "../components/ComponentManager";
 import { Shader } from "../gl/Shader";
 import { Vector3 } from "../math/Vector3";
 import { IMessageHandler } from "../message/IMessageHandler";
-import { Message } from "../message/Message";
+import { Message, PLAYER_DIED, POINT } from "../message/Message";
 import { GameObject, GameObjectManager } from "./GameObject";
+import { EntityConfigs } from "./helpers/EntityConfigs";
+import { ILevelDifficulty } from "./ILevelDifficulty";
+import { LevelManager } from "./LevelManager";
 import { LevelMap, MapTileType } from "./Map";
 import { Scene } from "./Scene";
 
@@ -18,19 +21,18 @@ export enum LevelState {
 export class Level implements IMessageHandler {
     
     private _id: number;
-    private _name: string;
-    private _description: string;
     private _scene: Scene;
     private _state: LevelState = LevelState.UNINITIALIZED;
     private _globalId: number = -1;
+    private _difficulty: ILevelDifficulty;
 
     private _collectedPoints: number = 0;
+    private _playerLifes: number = 3;
     private _map: LevelMap;
 
-    public constructor(id: number, name: string, description: string) {
+    public constructor(id: number, difficulty: ILevelDifficulty) {
         this._id = id;
-        this._name = name;
-        this._description = description;
+        this._difficulty = difficulty;
         this._scene = new Scene();
     }
 
@@ -38,168 +40,48 @@ export class Level implements IMessageHandler {
         return this._id;
     }
 
-    public get name(): string {
-        return this._name;
-    }
-
-    public get description(): string {
-        return this._description;
-    }
-
     public get scene(): Scene {
         return this._scene;
     }
 
     public onMessage(message: Message): void {
-        if (message.code === 'POINT::' + this._id) {
+        if (message.code === POINT + this._id) {
             this._collectedPoints++;
-            console.warn(`[POINT COLLECTED] ${this._collectedPoints} / ${this._map.pointsTotal}`)
-            if (this._collectedPoints === this._map.pointsTotal) {
+            console.warn(`[POINT] ${this._collectedPoints} / ${this._difficulty.pointsToCollect}`)
+            if (this._collectedPoints === this._difficulty.pointsToCollect) {
                 Message.send('LEVEL_WON::' + this._id, this);
                 alert('You WON!');
+                LevelManager.changeLevel();
+            }
+        } else if (message.code === PLAYER_DIED) {
+            this._playerLifes--;
+            if (this._playerLifes > 0) {
+                console.warn(`[PLAYER] Lost life. Lifes left: ${this._playerLifes} / 3`)
+            } else {
+                console.warn(`[PLAYER] Lost LEVEL!!`)
+                Message.send('LEVEL_LOST::' + this._id, this);
+                LevelManager.reset();
             }
         }
     }
 
-    public initialize(levelData: any): void {
-        Message.subscribe('POINT::' + this._id, this);
+    public initialize(): void {
+        Message.subscribe(PLAYER_DIED, this);
+        Message.subscribe(POINT + this._id, this);
 
-        if (levelData.objects === undefined) {
-            throw new Error(`Level initialisation error: Objects not present.`);
-        }
-        // for (const key in levelData.objects) {
-        //     const object = levelData.objects[key];
-        //     this.loadGameObject(object, this._scene.root);
-        // }
+        this._map = new LevelMap(this._difficulty);
 
-        this._map = new LevelMap();
         this._map.tiles.forEach((tile, index) => {
             if (tile.type !== MapTileType.HOLE) {
-                    this.loadGameObject({
-                        name: `ground_${index}` ,
-                        transform: {
-                            position: {
-                                x: tile.position.x,
-                                // y: tile.position.y,
-                                y: tile.position.y - (tile.scale.y / 2) + 0.5,
-                                z: tile.position.z
-                            },
-                            scale: {
-                                x: 0.8,
-                                y: tile.scale.y,
-                                z: 0.8
-                            }
-                        },
-                        components: [
-                            {
-                                name: `groundCube_${index}`,
-                                type: 'cube',
-                                materialName: tile.partOfMain ? 'red' : 'green',
-                                alpha: tile.partOfMain ? 1 : (1 - tile.lighten)
-                            },
-                            {
-                                name: 'groundCollision',
-                                type: 'collision',
-                                shape: {
-                                    type: 'aabb',
-                                    width: 0.8,
-                                    height: tile.scale.y + 0.2,
-                                    depth: 0.8
-                                }
-                            }
-                        ]
-                    }, this._scene.root);
+                // Load ground
+                this.loadGameObject(EntityConfigs.getGroundEntityConfig(`ground_${index}`, tile.partOfMainland, tile.position, tile.scale, tile.alpha), this._scene.root);
+
                 if (tile.type === MapTileType.START) {
-                    this.loadGameObject({
-                        name: 'player',
-                        transform: {
-                            position: {
-                                x: tile.position.x,
-                                y: tile.position.y + 1.1,
-                                z: tile.position.z
-                            },
-                            scale: {
-                                x: 0.5,
-                                y: 1,
-                                z: 0.5
-                            }
-                        },
-                        components: [
-                            {
-                                name: 'playerBody',
-                                type: 'cube',
-                                materialName: 'white'
-                            },
-                            {
-                                name: 'playerCollision',
-                                type: 'collision',
-                                static: false,
-                                shape: {
-                                    type: 'aabb',
-                                    width: 0.5,
-                                    height: 1,
-                                    depth: 0.5
-                                }
-                            }
-                        ],
-                        behaviors: [
-                            {
-                                name: 'PlayerBehavior',
-                                type: 'player',
-                                playerCollisionComponent: 'playerCollision',
-                                groundCollisionComponent: 'groundCollision',
-                                speed: 0.075,
-                                resetPosition: {
-                                    x: tile.position.x,
-                                    y: tile.position.y + 1.1,
-                                    z: tile.position.z
-                                }
-                            }
-                        ]
-                    }, this._scene.root);
-                }
-                if (tile.type === MapTileType.POINT) {
-                    this.loadGameObject({
-                        name: `key`,
-                        transform: {
-                            position: {
-                                x: tile.position.x,
-                                y: tile.position.y + 1,
-                                z: tile.position.z
-                            },
-                            scale: {
-                                x: 0.25,
-                                y: 0.25,
-                                z: 0.25
-                            },
-                            rotation: {
-                                // x: Math.PI / 4,
-                                y: -Math.PI / 4
-                            }
-                        },
-                        components: [
-                            {
-                                name: `cubeComponent_${index}`,
-                                type: 'cube',
-                                materialName: 'green'
-                            },
-                            {
-                                name: `key_${index}_Collision`,
-                                type: 'collision',
-                                shape: {
-                                    type: 'aabb',
-                                    width: 0.5,
-                                    height: 1,
-                                    depth: 0.5
-                                }
-                            },
-                            {
-                                name: `keyItem_${index}`,
-                                type: 'item',
-                                collisionName: `key_${index}_Collision`
-                            }
-                        ]
-                    }, this._scene.root);
+                    // Load player
+                    this.loadGameObject(EntityConfigs.getPlayerEntityConfig(tile.position, this._difficulty.speed), this._scene.root);
+                } else if (tile.type === MapTileType.POINT) {
+                    // Load points
+                    this.loadGameObject(EntityConfigs.getPointEntityConfig(`point_${index}`, tile.position), this._scene.root);
                 }
             }
         });
@@ -216,7 +98,9 @@ export class Level implements IMessageHandler {
     }
 
     public unload(): void {
-
+        Message.unsubscribe('PLAYER_DIED', this);
+        Message.unsubscribe('POINT::' + this._id, this);
+        this._scene.root.unload();
     }
 
     public update(time: number): void {
@@ -236,10 +120,12 @@ export class Level implements IMessageHandler {
     }
 
     public onDeactivated(): void {
-
+    
     }
 
     private loadGameObject(dataSection: any, parent: GameObject): void {
+        if (parent === undefined) parent = this._scene.root;
+        
         let name: string;
         if (dataSection.name !== undefined) {
             name = String(dataSection.name);

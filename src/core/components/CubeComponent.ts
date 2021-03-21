@@ -93,6 +93,11 @@ export class CubeComponent extends BaseComponent {
         this._cube.load();
     }
 
+    public unload(): void {
+        this.active = false;
+        this._cube.destroy();
+    }
+
     public render(shader: Shader): void {
         if (this.active) {
             this._cube.draw(shader, this.owner.worldMatrix);

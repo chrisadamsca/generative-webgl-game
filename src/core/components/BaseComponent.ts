@@ -33,7 +33,7 @@ export abstract class BaseComponent implements IComponent {
         this.active = true;
     }
 
-    public deactivate(): void {
+    public unload(): void {
         this.active = false;
     }
 

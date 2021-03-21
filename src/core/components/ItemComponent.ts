@@ -5,7 +5,7 @@ import { Circle2D } from "../graphics/shapes/Circle2D";
 import { IShape } from "../graphics/shapes/IShape";
 import { Rectangle2D } from "../graphics/shapes/Rectangle2d";
 import { IMessageHandler } from "../message/IMessageHandler";
-import { Message } from "../message/Message";
+import { COLLISION_ENTRY, Message, POINT } from "../message/Message";
 import { LevelManager } from "../world/LevelManager";
 import { BaseComponent } from "./BaseComponent";
 import { CollisionComponent } from "./CollisionComponent";
@@ -64,18 +64,18 @@ export class ItemComponent extends BaseComponent implements IMessageHandler {
     public constructor(data: ItemComponentData) {
         super(data);
         this._associatedCollisionComponent = data.collisionName;
-        Message.subscribe('COLLISION_ENTRY::' + this._associatedCollisionComponent, this);
+        Message.subscribe(COLLISION_ENTRY + this._associatedCollisionComponent, this);
     }
 
     public onMessage(message: Message): void {
         switch (message.code) {
-            case 'COLLISION_ENTRY::' + this._associatedCollisionComponent:
+            case COLLISION_ENTRY + this._associatedCollisionComponent:
                 
                 const data: CollisionData = message.context as CollisionData;
                 if (data.a.name === 'playerCollision' || data.b.name === 'playerCollision') {
                     // console.warn('Collecting item: ', data.b.owner.name);
-                    this.owner.removeFromScene();
-                    Message.send('POINT::' + LevelManager.activeLevel.id, this);
+                    this.owner.unload();
+                    Message.send(POINT + LevelManager.activeLevel.id, this);
                 }
                 break;
             default:
@@ -86,6 +86,12 @@ export class ItemComponent extends BaseComponent implements IMessageHandler {
     public load(): void {
         super.load();
     }
+
+    public unload(): void {
+        super.unload();
+        Message.unsubscribe(COLLISION_ENTRY + this._associatedCollisionComponent, this);
+    }
+
 
     update(time: number): void {
         super.update(time);

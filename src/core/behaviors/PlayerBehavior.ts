@@ -1,12 +1,8 @@
-import { AudioManager } from "../audio/AudioManager";
 import { CollisionData } from "../collision/CollisionManager";
-import { AnimatedSpriteComponent } from "../components/AnimatedSpriteComponent";
-import { CollisionComponent } from "../components/CollisionComponent";
 import { InputManager, Keys } from "../input/InputManager";
-import { Vector2 } from "../math/Vector2";
 import { Vector3 } from "../math/Vector3";
 import { IMessageHandler } from "../message/IMessageHandler";
-import { Message } from "../message/Message";
+import { COLLISION_ENTRY, COLLISION_EXIT, GAME_RESET, GAME_START, KEY_DOWN, Message } from "../message/Message";
 import { BaseBehavior } from "./BaseBehavior";
 import { BehaviorManager } from "./BehaviorManager";
 import { IBehavior } from "./IBehavior";
@@ -17,7 +13,6 @@ export class PlayerBehaviorData implements IBehaviorData {
 
     public name: string;
     public speed: number;
-    // public acceleration: Vector2 = new Vector2(0, 920);
     public playerCollisionComponent: string;
     public groundCollisionComponent: string;
     public resetPosition: Vector3 = Vector3.zero;
@@ -69,7 +64,6 @@ export class PlayerBehaviorBuilder implements IBehaviorBuilder {
 
 export class PlayerBehavior extends BaseBehavior implements IMessageHandler {
 
-    // private _acceleration: Vector2;
     private _nextVelocity: Vector3 = Vector3.zero;
     private _velocity: Vector3 = Vector3.zero;
     private _started: boolean = false;
@@ -93,18 +87,17 @@ export class PlayerBehavior extends BaseBehavior implements IMessageHandler {
         this._playerCollisionComponent = data.playerCollisionComponent;
         this._speed = data.speed;
 
-        Message.subscribe('KEY_DOWN', this);
-        Message.subscribe('COLLISION_ENTRY::' + this._playerCollisionComponent, this);
-        Message.subscribe('COLLISION_EXIT::' + this._playerCollisionComponent, this);
-        Message.subscribe('GAME_RESET', this);
-        Message.subscribe('GAME_START', this);
+        Message.subscribe(KEY_DOWN, this);
+        Message.subscribe(COLLISION_ENTRY + this._playerCollisionComponent, this);
+        Message.subscribe(COLLISION_EXIT + this._playerCollisionComponent, this);
+        Message.subscribe(GAME_RESET, this);
+        Message.subscribe(GAME_START, this);
     }
 
     public onMessage(message: Message): void {
 
         switch (message.code) {
-            case 'MOUSE_DOWN':
-            case 'KEY_DOWN':
+            case KEY_DOWN:
                 this.start();
                 if (InputManager.isKeyDown(Keys.LEFT) || InputManager.isKeyDown(Keys.A)) {
                     this._nextVelocity.set(-this._speed, 0, 0);
@@ -122,7 +115,7 @@ export class PlayerBehavior extends BaseBehavior implements IMessageHandler {
                     this._nextVelocity.set(0, 0, this._speed);
                 }
                 break;
-            case 'COLLISION_ENTRY::' + this._playerCollisionComponent:
+            case COLLISION_ENTRY + this._playerCollisionComponent:
                 const entryData = message.context as CollisionData;
                 const entryOther = entryData.a.owner.id === this._owner.id ? entryData.b : entryData.a;
                 // console.warn(`[Collision] ENTER into ground: ${entryOther.owner.id}`);
@@ -131,7 +124,7 @@ export class PlayerBehavior extends BaseBehavior implements IMessageHandler {
                 }
                 // console.warn('[Collision] touching ground ENTER', this._collidingGround);
                 break;
-            case 'COLLISION_EXIT::' + this._playerCollisionComponent:
+            case COLLISION_EXIT + this._playerCollisionComponent:
                 const exitData = message.context as CollisionData;
                 const exitOther = exitData.a.owner.id === this._owner.id ? exitData.b : exitData.a;
                 // console.warn(`[Collision] EXIT out of ground: ${exitOther.owner.id}`);
@@ -144,10 +137,10 @@ export class PlayerBehavior extends BaseBehavior implements IMessageHandler {
                     }
                 }
                 break;
-            case 'GAME_RESET':
+            case GAME_RESET:
                 this.reset();
                 break;
-            case 'GAME_START':
+            case GAME_START:
                 this.start();
                 break;
             default:
@@ -163,13 +156,10 @@ export class PlayerBehavior extends BaseBehavior implements IMessageHandler {
     }
 
     public update(time: number): void {
-        const seconds = time / 1000;
 
         if (this._started && this._isFalling) {
             this._owner.transform.position.add(new Vector3(0, -this._speed * 2, 0));
-        }
-
-        
+        }        
         
         if (this._nextVelocity.x !== 0) {
             const ownerPositionZ = this._owner.transform.position.z;
@@ -190,60 +180,14 @@ export class PlayerBehavior extends BaseBehavior implements IMessageHandler {
         }
 
 
-        // if (this._nextVelocity.x !== 0) {
-        //     if (this._velocity.z % 1 < 0.01 ) {
-                
-        //     }
-        //     const nearlyOnGrid = this._owner.transform.position.z % 1 < 0.01 || this._owner.transform.position.z % 1 > 0.99;
-        //     if (nearlyOnGrid) {
-        //         this._owner.transform.position.set(this._owner.transform.position.x, this._owner.transform.position.y, Math.round(this._owner.transform.position.z));
-        //     }
-        //     this._velocity.copyFrom(this._nextVelocity);
-        // }
-        // if (this._nextVelocity.z !== 0) {
-        //     const nearlyOnGrid = this._owner.transform.position.x % 1 < 0.01 || this._owner.transform.position.x % 1 > 0.99;
-        //     if (nearlyOnGrid) {
-        //         this._owner.transform.position.set(Math.round(this._owner.transform.position.x), this._owner.transform.position.y, this._owner.transform.position.z);
-        //     }
-        //     this._velocity.copyFrom(this._nextVelocity);
-        // }
-
         if (this._isAlive) {
             this._owner.transform.position.add(this._velocity);
         }
 
-        if (this._owner.transform.position.y < -10) {
+        if (this._owner.transform.position.y < -5) {
+            Message.send('PLAYER_DIED', this);
             this.reset();
         }
-
-
-        // // Limit max speed
-        // if (this._velocity.y > 400) {
-        //     this._velocity.y = 400;
-        // }
-
-        // Prevent flying to high
-        // if (this._owner.transform.position.y < -13) {
-        //     this._owner.transform.position.y = -13;
-        //     this._velocity.y = 0;
-        // }
-        
-        // this._owner.transform.position.add(this._velocity.clone().scale(seconds).toVector3());
-        // this._owner.transform.position.add(new Vector3(0, 1, 0));
-
-        // if (this._velocity.y < 0) {
-        //     this._owner.transform.rotation.z -= (Math as any).degToRad(600.0) * seconds;
-        //     if (this._owner.transform.rotation.z < (Math as any).degToRad(-20)) {
-        //         this._owner.transform.rotation.z = (Math as any).degToRad(-20);
-        //     }
-        // }
-
-        // if (this.isFalling || !this._isAlive) {
-        //     this._owner.transform.rotation.z += (Math as any).degToRad(480.0) * seconds;
-        //     if (this._owner.transform.rotation.z > (Math as any).degToRad(90)) {
-        //         this._owner.transform.rotation.z = (Math as any).degToRad(90);
-        //     }
-        // }
 
         super.update(time);
     }
@@ -253,7 +197,6 @@ export class PlayerBehavior extends BaseBehavior implements IMessageHandler {
             this._isFalling = true;
             this._isAlive = false;
             // AudioManager.playSound('dead');
-            Message.send('PLAYER_DIED', this);
         }
     }
 
@@ -263,38 +206,14 @@ export class PlayerBehavior extends BaseBehavior implements IMessageHandler {
         this._nextVelocity = Vector3.zero;
         this._isAlive = true;
         this._isFalling = false;
-        this.start()
-        // this._isPlaying = false;
-        // this._sprite.owner.transform.position.copyFrom(this._initialPosition);
-        // this._sprite.owner.transform.rotation.z = 0;
-        // this.owner.transform.rotation.z = 0;
-
-        // this._velocity.set(0, 0);
-        // this._acceleration.set(0, 920);
-        // this._sprite.play();
+        this.start();
     }
 
     private start(): void {
         if (!this._started) {
-            console.warn('#### STARTING');
             this._started = true;
         }
         // Message.send('PLAYER_RESET', this);
-    }
-
-    private decelerate(): void {
-        // this._acceleration.y = 0;
-        // this._velocity.y = 0;
-    }
-
-
-    private onRestart(y: number): void {
-        this._owner.transform.rotation.z = 0;
-        this._owner.transform.position.set(33, y);
-        // this._velocity.set(0, 0);
-        // this._acceleration.set(0, 920);
-        this._isAlive = true;
-        // this._sprite.play();
     }
 
 }

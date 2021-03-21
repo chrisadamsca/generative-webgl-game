@@ -10,9 +10,8 @@ export interface IComponent {
     readonly owner: GameObject;
 
     setOwner(owner: GameObject): void;
-    activate(): void;
-    deactivate(): void;
     load(): void;
+    unload(): void;
     updateReady(): void;
     update(time: number): void;
     render(shader: Shader): void;

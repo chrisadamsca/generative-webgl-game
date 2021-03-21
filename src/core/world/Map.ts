@@ -1,24 +1,26 @@
 import { Vector3 } from "../math/Vector3";
 import {Noise} from "noisejs";
+import { ILevelDifficulty } from "./ILevelDifficulty";
 
 export class LevelMap {
 
-    private _difficulty: number;
+    private _difficulty: ILevelDifficulty;
     private _width: number;
     private _depth: number;
 
     private _tiles: MapTile[] = [];
-    private _pointsTotal: number = 0;
     private _largestGroupSize: number = 0;
     private _largestGroupId: number = 1;
     private _currentGroupId: number = 1;
     private _currentGroupSize: number = 0;
 
-    public constructor(difficulty: number = 1, width: number = 20, depth: number = 12) {
+    public constructor(difficulty: ILevelDifficulty) {
         this._difficulty = difficulty;
-        this._width = width;
-        this._depth = depth;
+        this._width = difficulty.mapX;
+        this._depth = difficulty.mapZ;
         this.generateMap();
+        this.distributePoints();
+        this.setStartTile();
     }
 
 
@@ -34,26 +36,20 @@ export class LevelMap {
         return this._tiles;
     }
 
-    public get pointsTotal(): number {
-        return this._pointsTotal;
-    }
-
     private generateMap(): void {
         const seed = Math.random();
         console.warn('[SEED] ', seed)
         const noise = new Noise(seed);
-        // const noise = new Noise('ALENAHEITZ');
+
         for (let z = -(this._depth / 2); z < (this._depth / 2); z++) {
             for (let x = -(this._width / 2); x < (this._width / 2); x++) {
                 const value = noise.simplex2(x / 2, z / 2);
                 let type = value > -0.3 ? MapTileType.DEFAULT : MapTileType.HOLE;
-
-                // const position = new Vector3(x + x/5, 2, z + z/5);
                 const position = new Vector3(x, 2, z);
                 const scale = new Vector3(1, 0.2 + Math.abs(value * 8), 1);
-                const lighten = Math.abs(value / 1.5);
+                const alpha = Math.abs(value / 1.5);
 
-                const tile = new MapTile(position, type, scale, lighten);
+                const tile = new MapTile(position, type, scale, alpha);
 
                 this._tiles.push(tile);
             }
@@ -62,32 +58,35 @@ export class LevelMap {
 
         for (let x = 0; x < this._width; x++) {
             for (let z = 0; z < this._depth; z++) {
-                // if (this._largestGroupSize < (this._width * this._depth) * 0.7) {
-                    this._currentGroupSize = 0;
-                    this.breadthFirst(x, z);
-                    this._currentGroupId++;
-                // }
+                this._currentGroupSize = 0;
+                this.breadthFirst(x, z);
+                this._currentGroupId++;
             }
         }
 
-        console.warn('[BFS] Largest Size: ', this._largestGroupSize);
-        console.warn('[BFS] Largest Group: ', this._largestGroupId);
-        this._tiles.forEach((tile, index) => {
-            console.warn(`Tile ${index}, group: ${tile.groupId}`)
+        if (this._largestGroupSize < this._tiles.length * 0.6) {
+            return this.retry();
+        }
+
+        this._tiles.forEach((tile) => {
             if (tile.groupId === this._largestGroupId) {
-                tile.partOfMain = true;
-                if ((Math.random() > 0.8)) {
-                    tile.setType(MapTileType.POINT);
-                    this._pointsTotal++;
-                }
+                tile.partOfMainland = true;
             }
         });
-        this.setStartTile();
+    }
+
+    private retry(): void {
+        this._tiles = [];
+        this._largestGroupSize = 0;
+        this._largestGroupId = 1;
+        this._currentGroupId = 1;
+        this._currentGroupSize = 0;
+        this.generateMap();
     }
 
     private setStartTile(): void {
         const tile = this._tiles[Math.floor(Math.random() * this._tiles.length)];
-        if (tile.partOfMain && tile.type !== MapTileType.POINT) {
+        if (tile.partOfMainland && tile.type !== MapTileType.POINT) {
             tile.setType(MapTileType.START);
         } else {
             this.setStartTile();
@@ -122,6 +121,18 @@ export class LevelMap {
         }
     }
 
+    private distributePoints() {
+        let pointsToDistribute = this._difficulty.pointsToCollect;
+        while(pointsToDistribute > 0) {
+            const tile = this._tiles[Math.floor(Math.random() * this._tiles.length)];
+            if (tile.partOfMainland && tile.type !== MapTileType.POINT) {
+                tile.setType(MapTileType.POINT);
+                pointsToDistribute--;
+            }
+        }
+
+    }
+
 }
 
 export enum MapTileType {
@@ -139,17 +150,17 @@ export class MapTile {
     public type: number;
     public position: Vector3;
     public scale: Vector3;
-    public lighten: number;
+    public alpha: number;
 
     public visited: boolean;
     public groupId: number;
-    public partOfMain: boolean;
+    public partOfMainland: boolean;
 
-    public constructor(position: Vector3, type: MapTileType = MapTileType.DEFAULT, scale: Vector3, lighten: number) {
+    public constructor(position: Vector3, type: MapTileType = MapTileType.DEFAULT, scale: Vector3, alpha: number) {
         this.position = position;
         this.scale = scale;
         this.type = type;
-        this.lighten = lighten < 0.2 ? 0.2 : lighten;
+        this.alpha = alpha < 0.2 ? 0.2 : alpha;
     }
 
     public setType(type: MapTileType): void {

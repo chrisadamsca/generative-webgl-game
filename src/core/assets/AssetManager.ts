@@ -1,10 +1,8 @@
-import { Message, MessagePrio } from "../message/Message";
+import { Message, MessagePrio, MESSAGE_ASSET_LOADER_ASSET_LOADED } from "../message/Message";
 import { IAsset } from "./IAsset";
 import { IAssetLoader } from "./IAssetLoader";
 import { ImageAssetLoader } from "./ImageAssetLoader";
 import { JSONAssetLoader } from "./JSONAssetLoader";
-
-export const MESSAGE_ASSET_LOADER_ASSET_LOADED = 'MESSAGE_ASSET_LOADER_ASSET_LOADED::';
 
 export class AssetManager {
 

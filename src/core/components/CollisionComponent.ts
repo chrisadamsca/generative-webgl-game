@@ -116,12 +116,11 @@ export class CollisionComponent extends BaseComponent {
     }
 
     public render(shader: Shader): void {
-        // this._sprite.draw(shader, this.owner.worldMatrix);
         super.render(shader);
     }
 
-    public deactivate(): void {
-        super.deactivate();
+    public unload(): void {
+        super.unload();
         CollisionManager.unRegisterCollisionComponent(this);
     }
 

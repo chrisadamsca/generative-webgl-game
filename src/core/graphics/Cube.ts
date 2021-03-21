@@ -19,61 +19,11 @@ export class Cube {
     protected _vertexArray: WebGLVertexArrayObject;
     protected _verticesBuffer: GLBuffer;
     protected _indecesBuffer: GLBuffer;
-    protected _normalsBuffer: GLBuffer;
 
     protected _materialName: string;
     protected _material: Material;
     protected _alpha: number = 1;
     protected _vertices: number[];    
-    protected _normals: number[] = [
-        // Front
-        0, 0, 1,
-        0, 0, 1,
-        0, 0, 1,
-        0, 0, 1,
-        0, 0, 1,
-        0, 0, 1,
-
-        // Right
-        1, 0, 0,
-        1, 0, 0,
-        1, 0, 0,
-        1, 0, 0,
-        1, 0, 0,
-        1, 0, 0,
-
-        // Back
-        0, 0, -1,
-        0, 0, -1,
-        0, 0, -1,
-        0, 0, -1,
-        0, 0, -1,
-        0, 0, -1,
-
-        // Top
-        0, 1, 0,
-        0, 1, 0,
-        0, 1, 0,
-        0, 1, 0,
-        0, 1, 0,
-        0, 1, 0,
-
-        // Left
-        -1, 0, 0,
-        -1, 0, 0,
-        -1, 0, 0,
-        -1, 0, 0,
-        -1, 0, 0,
-        -1, 0, 0,
-
-        // Bottom
-        0, -1, 0,
-        0, -1, 0,
-        0, -1, 0,
-        0, -1, 0,
-        0, -1, 0,
-        0, -1, 0,
-    ];
 
     public constructor(name: string, materialName: string, width: number = 1, height: number = 1, depth: number = 1, alpha = 1) {
         this._name = name;
@@ -112,8 +62,6 @@ export class Cube {
 
     public destroy(): void {
         this._verticesBuffer.destroy();
-        this._indecesBuffer.destroy();
-        this._normalsBuffer.destroy();
         MaterialManager.releaseMaterial(this._materialName);
         this._material = undefined;
         this._materialName = undefined;
