@@ -47,7 +47,7 @@ export class LevelMap {
                 let type = value > -0.3 ? MapTileType.DEFAULT : MapTileType.HOLE;
                 const position = new Vector3(x, 2, z);
                 const scale = new Vector3(1, 0.2 + Math.abs(value * 8), 1);
-                const alpha = Math.abs(value / 1.5);
+                const alpha = 0.6 + Math.abs(value / 1.5);
 
                 const tile = new MapTile(position, type, scale, alpha);
 
@@ -61,10 +61,13 @@ export class LevelMap {
                 this._currentGroupSize = 0;
                 this.breadthFirst(x, z);
                 this._currentGroupId++;
+                
+                if (this.isPlayable()) break;
             }
+            if (this.isPlayable()) break;
         }
 
-        if (this._largestGroupSize < this._tiles.length * 0.6) {
+        if (!this.isPlayable()) {
             return this.retry();
         }
 
@@ -73,6 +76,10 @@ export class LevelMap {
                 tile.partOfMainland = true;
             }
         });
+    }
+
+    private isPlayable(): boolean {
+        return this._largestGroupSize > this._tiles.length * 0.6;
     }
 
     private retry(): void {
@@ -97,9 +104,6 @@ export class LevelMap {
         if ((x >= 0 && x < this._width) && (z >= 0 && z < this._depth)) {
             const pos = x + (z * this._width);
             const currentTile = this._tiles[pos];
-            // if (pos === 1) {
-            //     currentTile.partOfMain = true;
-            // }
             if (currentTile.type !== MapTileType.HOLE) {
                 if (!currentTile.visited) {       
                     currentTile.setVisited();
@@ -139,10 +143,7 @@ export enum MapTileType {
     DEFAULT,
     HOLE,
     START,
-    END,
-    DOOR,
-    POINT,
-    KEY
+    POINT
 }
 
 export class MapTile {

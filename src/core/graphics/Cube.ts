@@ -77,7 +77,7 @@ export class Cube {
 
         // Vertices
         this._vertices = [	
-            // Front 
+            // Front
             -widthHalf, heightHalf, depthHalf, 0, 0, 1,
             -widthHalf,-heightHalf, depthHalf, 0, 0, 1,
             widthHalf,-heightHalf, depthHalf, 0, 0, 1,

@@ -79,7 +79,8 @@ export class Engine implements IMessageHandler{
         this._canvas = GLUtilities.initialize();
         this.resize();
 
-        gl.clearColor(255 / 255, 241 / 255, 224 / 255, 1);
+        // gl.clearColor(1, 1, 1, 1);
+        gl.clearColor(152 / 255, 201 / 255, 244 / 255, 1);
         // gl.enable(gl.BLEND);
         // gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
         gl.enable(gl.DEPTH_TEST);
@@ -96,9 +97,19 @@ export class Engine implements IMessageHandler{
         MaterialManager.registerMaterial(new Material('bg', '/assets/textures/bg.png', Color.white()));
         MaterialManager.registerMaterial(new Material('cube', '/assets/textures/cube.png', Color.white()));
         MaterialManager.registerMaterial(new Material('white', '/assets/textures/cube.png', Color.white()));
-        MaterialManager.registerMaterial(new Material('red', '/assets/textures/cube.png', new Color(253, 154, 158)));
         MaterialManager.registerMaterial(new Material('green', '/assets/textures/cube.png', new Color(176, 208, 211)));
-        MaterialManager.registerMaterial(new Material('blue', '/assets/textures/cube.png', new Color(247, 175, 157)));
+
+        MaterialManager.registerMaterial(new Material('shadow', '/assets/textures/cube.png', new Color(0, 0, 0)));
+        
+        // Theme 1
+        // MaterialManager.registerMaterial(new Material('ground', '/assets/textures/cube.png', new Color(58, 12, 163)));
+        // MaterialManager.registerMaterial(new Material('point', '/assets/textures/cube.png', new Color(247, 37, 133)));
+        // MaterialManager.registerMaterial(new Material('player', '/assets/textures/cube.png', new Color(181, 23, 158)));
+
+        // Theme 1
+        MaterialManager.registerMaterial(new Material('ground', '/assets/textures/cube.png', new Color(72, 207, 196)));
+        MaterialManager.registerMaterial(new Material('point', '/assets/textures/cube.png', new Color(7, 122, 116)));
+        MaterialManager.registerMaterial(new Material('player', '/assets/textures/cube.png', new Color(221, 100, 108)));
 
         // Load Sounds
         // AudioManager.loadSoundFile('flap', '/assets/sounds/flap.mp3');
@@ -136,7 +147,7 @@ export class Engine implements IMessageHandler{
     }
 
     private render(): void {
-        gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT); // ??? What is this? Resetting everything, but how?
+        gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
         this._camera.render();
 

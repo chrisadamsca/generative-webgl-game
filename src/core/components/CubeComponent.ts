@@ -76,14 +76,16 @@ export class CubeComponent extends BaseComponent {
     private _cube: Cube;
     private _width: number;
     private _height: number;
+    private _depth: number;
 
     public constructor(data: CubeComponentData) {
         super(data);
 
         this._width = data.width;
         this._height = data.height;
+        this._depth = data.depth;
 
-        this._cube = new Cube(data.name, data.materialName, this._width, this._height, this._height, data.alpha);
+        this._cube = new Cube(data.name, data.materialName, this._width, this._height, this._depth, data.alpha);
         if (!data.origin.equals(Vector3.zero)) {
             this._cube.origin.copyFrom(data.origin);
         }

@@ -23,8 +23,23 @@ export class EntityConfigs {
                 {
                     name: `${name}_cube`,
                     type: 'cube',
-                    materialName: partOfMainland ? 'red' : 'green',
-                    alpha: partOfMainland ? 1 : colorAlpha
+                    materialName: 'ground',
+                    // materialName: partOfMainland ? 'ground' : 'player',
+                    alpha: colorAlpha
+                    // alpha: partOfMainland ? colorAlpha : 1
+                },
+                {
+                    name: `${name}_shadow`,
+                    type: 'cube',
+                    materialName: 'shadow',
+                    transform: {
+                        scale: {
+                            y: 5
+                        }
+                    },
+                    // materialName: partOfMainland ? 'ground' : 'player',
+                    alpha: colorAlpha
+                    // alpha: partOfMainland ? colorAlpha : 1
                 },
                 {
                     name: 'groundCollision',
@@ -59,7 +74,7 @@ export class EntityConfigs {
                 {
                     name: 'playerBody',
                     type: 'cube',
-                    materialName: 'white'
+                    materialName: 'player'
                 },
                 {
                     name: 'playerCollision',
@@ -112,7 +127,7 @@ export class EntityConfigs {
                 {
                     name: `${name}_cube`,
                     type: 'cube',
-                    materialName: 'green'
+                    materialName: 'point'
                 },
                 {
                     name: `${name}_collision`,
