@@ -29,19 +29,6 @@ export class EntityConfigs {
                     // alpha: partOfMainland ? colorAlpha : 1
                 },
                 {
-                    name: `${name}_shadow`,
-                    type: 'cube',
-                    materialName: 'shadow',
-                    transform: {
-                        scale: {
-                            y: 5
-                        }
-                    },
-                    // materialName: partOfMainland ? 'ground' : 'player',
-                    alpha: colorAlpha
-                    // alpha: partOfMainland ? colorAlpha : 1
-                },
-                {
                     name: 'groundCollision',
                     type: 'collision',
                     shape: {
@@ -140,8 +127,8 @@ export class EntityConfigs {
                     }
                 },
                 {
-                    name: `${name}_item`,
-                    type: 'item',
+                    name: `${name}_point`,
+                    type: 'point',
                     collisionName: `${name}_collision`
                 }
             ]

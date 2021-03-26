@@ -1,3 +1,4 @@
+import { AudioManager } from "../audio/AudioManager";
 import { CollisionData, CollisionManager } from "../collision/CollisionManager";
 import { Shader } from "../gl/Shader";
 import { AABB } from "../graphics/shapes/AABB";
@@ -14,7 +15,7 @@ import { IComponent } from "./IComponent";
 import { IComponentBuilder } from "./IComponentBuilder";
 import { IComponentData } from "./IComponentData";
 
-export class ItemComponentData implements IComponentData {
+export class PointComponentData implements IComponentData {
 
     public name: string;
     public type: string;
@@ -22,46 +23,46 @@ export class ItemComponentData implements IComponentData {
 
     public setFromJSON(json: any): void {
         if (json.name === undefined) {
-            throw new Error(`ItemComponentData requires 'name' to be defined.`)
+            throw new Error(`PointComponentData requires 'name' to be defined.`)
         }
         this.name = String(json.name);
 
         if (json.type === undefined) {
-            throw new Error(`ItemComponentData requires 'type' to be defined.`)
+            throw new Error(`PointComponentData requires 'type' to be defined.`)
         }
         this.type = String(json.type);
 
         if (json.collisionName === undefined) {
-            throw new Error(`ItemComponentData requires 'collisionName' to be defined.`)
+            throw new Error(`PointComponentData requires 'collisionName' to be defined.`)
         }
         this.collisionName = String(json.collisionName);
     }
     
 }
 
-export class ItemComponentBuilder implements IComponentBuilder {
+export class PointComponentBuilder implements IComponentBuilder {
 
     public get type(): string {
-        return 'item';
+        return 'point';
     };
 
     public buildFromJSON(json: any): IComponent {
-        const data = new ItemComponentData();
+        const data = new PointComponentData();
         data.setFromJSON(json);
-        return new ItemComponent(data);
+        return new PointComponent(data);
     }
 
 }
 
 
-ComponentManager.registerBuilder(new ItemComponentBuilder());
+ComponentManager.registerBuilder(new PointComponentBuilder());
 
-export class ItemComponent extends BaseComponent implements IMessageHandler {
+export class PointComponent extends BaseComponent implements IMessageHandler {
     
     private _name: string;
     private _associatedCollisionComponent: string;
     
-    public constructor(data: ItemComponentData) {
+    public constructor(data: PointComponentData) {
         super(data);
         this._associatedCollisionComponent = data.collisionName;
         Message.subscribe(COLLISION_ENTRY + this._associatedCollisionComponent, this);
@@ -73,7 +74,7 @@ export class ItemComponent extends BaseComponent implements IMessageHandler {
                 
                 const data: CollisionData = message.context as CollisionData;
                 if (data.a.name === 'playerCollision' || data.b.name === 'playerCollision') {
-                    // console.warn('Collecting item: ', data.b.owner.name);
+                    AudioManager.playSound('ding');
                     this.owner.unload();
                     Message.send(POINT + LevelManager.activeLevel.id, this);
                 }

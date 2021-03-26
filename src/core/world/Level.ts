@@ -50,7 +50,6 @@ export class Level implements IMessageHandler {
             console.warn(`[POINT] ${this._collectedPoints} / ${this._difficulty.pointsToCollect}`)
             if (this._collectedPoints === this._difficulty.pointsToCollect) {
                 Message.send('LEVEL_WON::' + this._id, this);
-                alert('You WON!');
                 LevelManager.changeLevel();
             }
         } else if (message.code === PLAYER_DIED) {
@@ -85,6 +84,9 @@ export class Level implements IMessageHandler {
                 }
             }
         });
+        // setTimeout(() => {
+        //     LevelManager.changeLevel();
+        // }, 500);
     }
 
     public load(): void {

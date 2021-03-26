@@ -9,6 +9,7 @@ export const POINT = 'POINT::';
 export const GAME_RESET = 'GAME_RESET';
 export const GAME_START = 'GAME_START';
 export const MESSAGE_ASSET_LOADER_ASSET_LOADED = 'MESSAGE_ASSET_LOADER_ASSET_LOADED::';
+export const DIFFICULTY_UPDATED = 'DIFFICULTY_UPDATED::';
 
 export enum MessagePrio {
     NORMAL,

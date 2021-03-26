@@ -39,6 +39,7 @@ export class AdvancedShader extends Shader {
     
                 gl_Position = uProjectionMatrix * uModelViewMatrix * vec4(aVertexPosition, 1.0);
             }
+            
         `;
     }
 
@@ -46,14 +47,11 @@ export class AdvancedShader extends Shader {
         return glsl`#version 300 es
             precision mediump float;
 
-            // Expect the interpolated value fro, the vertex shader
             in vec4 vVertexColor;
         
-            // Return the final color as fragColor
             out vec4 fragColor;
         
             void main(void)  {
-                // Simply set the value passed in from the vertex shader
                 fragColor = vVertexColor * vec4(1, 1, 1, 1);
             }
         `;

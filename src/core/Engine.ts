@@ -1,34 +1,28 @@
 import { AssetManager } from "./assets/AssetManager";
 import { gl, GLUtilities } from "./gl/GLUtilities";
-import { BasicShader } from "./gl/shaders/BasicShader";
 import { Color } from "./graphics/Color";
 import { Material } from "./graphics/Material";
 import { MaterialManager } from "./graphics/MaterialManager";
-import { Matrix4x4 } from "./math/matrix4x4";
 import { MessageBus } from "./message/MessageBus";
 import { LevelManager } from "./world/LevelManager";
 import { RotationBehaviorData } from "./behaviors/RotationBehavior";
 import { InputManager, MouseContext } from "./input/InputManager";
 import { KeyboardMovementBehaviorData } from "./behaviors/KeyboardMovementBehavior";
-import { IMessageHandler } from "./message/IMessageHandler";
-import { Message, PLAYER_DIED } from "./message/Message";
+import { Message } from "./message/Message";
 import { AudioManager } from "./audio/AudioManager";
 import { CollisionComponentData } from "./components/CollisionComponent";
 import { CollisionManager } from "./collision/CollisionManager";
 import { PlayerBehaviorData } from "./behaviors/PlayerBehavior";
 import { importMath } from "./math/MathExtensions";
 import { ScrollBehaviorData } from "./behaviors/ScrollBehavior";
-import { Cube } from "./graphics/Cube";
 import { CubeComponentData } from "./components/CubeComponent";
-import { Vector3 } from "./math/Vector3";
 import { AdvancedShader } from "./gl/shaders/AdvancedShader";
-import { mat4, vec3 } from "gl-matrix";
 import { Shader } from "./gl/Shader";
-import { ItemComponentData } from "./components/ItemComponent";
+import { PointComponentData } from "./components/PointComponent";
 import { Camera } from "./graphics/Camera";
 
 const tempWebpackFixToIncludeColisionComponentTS = new CollisionComponentData();
-const tempWebpackFixToIncludeItemComponentTS = new ItemComponentData();
+const tempWebpackFixToIncludePointComponentTS = new PointComponentData();
 const tempWebpackFixToIncludeRotationBehaviorTS = new RotationBehaviorData();
 const tempWebpackFixToIncludeKeyboardMovementBehaviorTS = new KeyboardMovementBehaviorData();
 const tempWebpackFixToIncludePlayerBehaviorTS = new PlayerBehaviorData();
@@ -36,7 +30,7 @@ const tempWebpackFixToIncludeScrollBehaviorTS = new ScrollBehaviorData();
 const tempWebpackFixToIncludeCubeTS = new CubeComponentData();
 const i = importMath;
 
-export class Engine implements IMessageHandler{
+export class Engine {
 
     private _canvas: HTMLCanvasElement;
     private _shader: Shader;
@@ -46,7 +40,6 @@ export class Engine implements IMessageHandler{
 
     public constructor() {
         console.log('Engine created.');
-        Message.subscribe(PLAYER_DIED, this);
     }
 
     public resize(): void {
@@ -62,13 +55,6 @@ export class Engine implements IMessageHandler{
         }
     }
 
-    public onMessage(message: Message): void {
-        if (message.code === PLAYER_DIED) {
-            // alert();
-            // LevelManager.changeLevel(1);
-        }
-    }
-
     public start(): Engine {
         console.log('Engine started.');
 
@@ -79,10 +65,7 @@ export class Engine implements IMessageHandler{
         this._canvas = GLUtilities.initialize();
         this.resize();
 
-        // gl.clearColor(1, 1, 1, 1);
         gl.clearColor(152 / 255, 201 / 255, 244 / 255, 1);
-        // gl.enable(gl.BLEND);
-        // gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
         gl.enable(gl.DEPTH_TEST);
 
         // Load Shaders
@@ -94,25 +77,12 @@ export class Engine implements IMessageHandler{
         this._camera.initialize();
 
         // Load Materials
-        MaterialManager.registerMaterial(new Material('bg', '/assets/textures/bg.png', Color.white()));
-        MaterialManager.registerMaterial(new Material('cube', '/assets/textures/cube.png', Color.white()));
-        MaterialManager.registerMaterial(new Material('white', '/assets/textures/cube.png', Color.white()));
-        MaterialManager.registerMaterial(new Material('green', '/assets/textures/cube.png', new Color(176, 208, 211)));
-
-        MaterialManager.registerMaterial(new Material('shadow', '/assets/textures/cube.png', new Color(0, 0, 0)));
-        
-        // Theme 1
-        // MaterialManager.registerMaterial(new Material('ground', '/assets/textures/cube.png', new Color(58, 12, 163)));
-        // MaterialManager.registerMaterial(new Material('point', '/assets/textures/cube.png', new Color(247, 37, 133)));
-        // MaterialManager.registerMaterial(new Material('player', '/assets/textures/cube.png', new Color(181, 23, 158)));
-
-        // Theme 1
-        MaterialManager.registerMaterial(new Material('ground', '/assets/textures/cube.png', new Color(72, 207, 196)));
-        MaterialManager.registerMaterial(new Material('point', '/assets/textures/cube.png', new Color(7, 122, 116)));
-        MaterialManager.registerMaterial(new Material('player', '/assets/textures/cube.png', new Color(221, 100, 108)));
+        MaterialManager.registerMaterial(new Material('ground', new Color(72, 207, 196)));
+        MaterialManager.registerMaterial(new Material('point', new Color(7, 122, 116)));
+        MaterialManager.registerMaterial(new Material('player', new Color(221, 100, 108)));
 
         // Load Sounds
-        // AudioManager.loadSoundFile('flap', '/assets/sounds/flap.mp3');
+        AudioManager.loadSoundFile('ding', '/assets/sounds/ding.wav');
 
         // Setup light
         const lightDirLocation = this._shader.getUniformLocation('uLightDirection');
