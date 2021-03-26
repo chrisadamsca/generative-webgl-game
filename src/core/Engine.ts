@@ -74,7 +74,7 @@ export class Engine {
         MaterialManager.registerMaterial(new Material('player', new Color(221, 100, 108)));
 
         // Load Sounds
-        AudioManager.loadSoundFile('ding', '/assets/sounds/ding.wav');
+        AudioManager.loadSoundFile('ding', 'assets/sounds/ding.wav');
 
         // Setup light
         const lightDirLocation = this._shader.getUniformLocation('uLightDirection');
