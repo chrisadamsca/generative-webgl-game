@@ -25,7 +25,6 @@ export class JSONAssetLoader implements IAssetLoader {
 
     private async onJSONLoaded(assetName: string, response: Response): Promise<void> {
         const json: JSON = await response.json();
-        console.log('OnJSONLoaded: assetname/json', assetName, json);
         const asset = new JSONAsset(assetName, json);
         AssetManager.onAssetLoaded(asset);
     }

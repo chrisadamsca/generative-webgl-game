@@ -8,7 +8,6 @@ export class ComponentManager {
     private static _registeredBuilders: {[type: string]: IComponentBuilder} = {};
 
     public static registerBuilder(builder: IComponentBuilder): void {
-        console.warn('new builder registered: ', builder.type)
         ComponentManager._registeredBuilders[builder.type] = builder;
     }
 

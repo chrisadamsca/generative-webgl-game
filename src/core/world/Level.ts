@@ -87,9 +87,6 @@ export class Level implements IMessageHandler {
                 }
             }
         });
-        // setTimeout(() => {
-        //     LevelManager.changeLevel();
-        // }, 500);
     }
 
     public load(): void {

@@ -21,6 +21,7 @@ export class Camera implements IMessageHandler {
         this._fovy = fovy;
         this._cameraHeight = startHeight;
 
+
         Message.subscribe(DIFFICULTY_UPDATED, this);
     }
 
@@ -48,7 +49,7 @@ export class Camera implements IMessageHandler {
         this.initialize();
     }
 
-    public update() {
+    public update(time: number) {
 
     }
 

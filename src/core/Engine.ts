@@ -20,6 +20,7 @@ import { AdvancedShader } from "./gl/shaders/AdvancedShader";
 import { Shader } from "./gl/Shader";
 import { PointComponentData } from "./components/PointComponent";
 import { Camera } from "./graphics/Camera";
+import { UIManager } from "./ui/UIManager";
 export class Engine {
 
     private _canvas: HTMLCanvasElement;
@@ -51,6 +52,7 @@ export class Engine {
         AssetManager.initialize();
         InputManager.initialize();
         LevelManager.initialize();
+        UIManager.initialize();
 
         this._canvas = GLUtilities.initialize();
         this.resize();
@@ -102,6 +104,7 @@ export class Engine {
         MessageBus.update(delta);
         LevelManager.update(delta);
         CollisionManager.update(delta);
+        this._camera.update(delta);
 
         this._previousTime = performance.now();
     }

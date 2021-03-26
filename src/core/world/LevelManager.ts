@@ -48,8 +48,8 @@ export class LevelManager {
             mapX: START_WIDTH,
             mapZ: START_DEPTH
         };
-        this._globalLevelId = 1;
-        this.changeLevel();
+        LevelManager._globalLevelId = 1;
+        LevelManager.changeLevel();
     }
 
     public static changeLevel(first: boolean = false): void {
@@ -75,12 +75,21 @@ export class LevelManager {
         }
     }
 
+    public static startShowcase(): void {
+        const interval = setInterval(() => {
+            LevelManager.changeLevel();
+            if (LevelManager._globalLevelId > 25) {
+                clearInterval(interval);
+            }
+        }, 1000);
+    }
+
     private static updateDifficulty(): void {
-        Message.send(DIFFICULTY_UPDATED, this._inst, LevelManager._difficulty);
+        Message.send(DIFFICULTY_UPDATED, LevelManager._inst, LevelManager._difficulty);
         const updatedSpeed = LevelManager._difficulty.speed + SPEED_INCREMENT;
         const updatedPTC = LevelManager._difficulty.pointsToCollect + PTC_INCREMENT;
-        const updatedMapX = this.majorDifficultyChange() ? LevelManager._difficulty.mapX + WIDTH_INCREMENT : LevelManager._difficulty.mapX;
-        const updatedMapZ = this.majorDifficultyChange() ? LevelManager._difficulty.mapZ + DEPTH_INCREMENT : LevelManager._difficulty.mapZ;
+        const updatedMapX = LevelManager.majorDifficultyChange() ? LevelManager._difficulty.mapX + WIDTH_INCREMENT : LevelManager._difficulty.mapX;
+        const updatedMapZ = LevelManager.majorDifficultyChange() ? LevelManager._difficulty.mapZ + DEPTH_INCREMENT : LevelManager._difficulty.mapZ;
         LevelManager._difficulty = {
             speed: updatedSpeed,
             pointsToCollect: updatedPTC,
@@ -98,7 +107,7 @@ export class LevelManager {
         LevelManager._activeLevel.initialize();
         LevelManager._activeLevel.onActivated();
         LevelManager._activeLevel.load();
-        UIManager.updateLevel(this._globalLevelId);
+        UIManager.updateLevel(LevelManager._globalLevelId);
         LevelManager._globalLevelId++
         LevelManager.updateDifficulty();
     }

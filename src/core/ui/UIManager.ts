@@ -1,6 +1,14 @@
+import { LevelManager } from "../world/LevelManager";
+
 export class UIManager {
 
     private constructor() {}
+
+    public static initialize() {
+        document.getElementById('debug-btn').onclick = () => {
+            LevelManager.startShowcase();
+        }
+    }
 
     public static updateLevel(level: number): void {
         document.getElementById('level-count').innerText = level.toString();

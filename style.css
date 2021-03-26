@@ -18,6 +18,14 @@ canvas {
     height: 100%;
 }
 
+#debug-btn {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 3rem;
+    height: 3rem;
+}
+
 .gui {
     position: fixed;
     top: 0;
@@ -43,7 +51,7 @@ canvas {
 }
 
 .gui__header__level {
-    font-size: 2rem;
+    font-size: 1.75rem;
     text-align: center;
 }
 
@@ -54,10 +62,10 @@ canvas {
 }
 
 .gui__footer__points, .gui__footer__lifes {
-    font-size: 1.5rem;
+    font-size: 1.75rem;
 }
 .gui__footer__points span, .gui__footer__lifes span {
-    font-size: 3rem;
+    font-size: 2.75rem;
 }
 
 .gui__footer__lifes {
