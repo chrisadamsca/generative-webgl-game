@@ -5,6 +5,7 @@ import { Shader } from "../gl/Shader";
 import { Vector3 } from "../math/Vector3";
 import { IMessageHandler } from "../message/IMessageHandler";
 import { Message, PLAYER_DIED, POINT } from "../message/Message";
+import { UIManager } from "../ui/UIManager";
 import { GameObject, GameObjectManager } from "./GameObject";
 import { EntityConfigs } from "./helpers/EntityConfigs";
 import { ILevelDifficulty } from "./ILevelDifficulty";
@@ -47,17 +48,16 @@ export class Level implements IMessageHandler {
     public onMessage(message: Message): void {
         if (message.code === POINT + this._id) {
             this._collectedPoints++;
-            console.warn(`[POINT] ${this._collectedPoints} / ${this._difficulty.pointsToCollect}`)
+            UIManager.updatePoints(this._collectedPoints, this._difficulty.pointsToCollect);
             if (this._collectedPoints === this._difficulty.pointsToCollect) {
                 Message.send('LEVEL_WON::' + this._id, this);
                 LevelManager.changeLevel();
             }
         } else if (message.code === PLAYER_DIED) {
             this._playerLifes--;
+            UIManager.updateLifes(this._playerLifes);
             if (this._playerLifes > 0) {
-                console.warn(`[PLAYER] Lost life. Lifes left: ${this._playerLifes} / 3`)
             } else {
-                console.warn(`[PLAYER] Lost LEVEL!!`)
                 Message.send('LEVEL_LOST::' + this._id, this);
                 LevelManager.reset();
             }
@@ -67,6 +67,9 @@ export class Level implements IMessageHandler {
     public initialize(): void {
         Message.subscribe(PLAYER_DIED, this);
         Message.subscribe(POINT + this._id, this);
+
+        UIManager.updateLifes(this._playerLifes);
+        UIManager.updatePoints(this._collectedPoints, this._difficulty.pointsToCollect);
 
         this._map = new LevelMap(this._difficulty);
 

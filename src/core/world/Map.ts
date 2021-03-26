@@ -38,7 +38,6 @@ export class LevelMap {
 
     private generateMap(): void {
         const seed = Math.random();
-        console.warn('[SEED] ', seed)
         const noise = new Noise(seed);
 
         for (let z = -(this._depth / 2); z < (this._depth / 2); z++) {

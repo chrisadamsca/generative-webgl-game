@@ -1,0 +1,65 @@
+* {
+    box-sizing: border-box;
+}
+
+html, body {
+    padding: 0;
+    margin: 0;
+    overflow: hidden;
+    position: relative;
+    height: 100%;
+
+    font-family: 'Major Mono Display', monospace;
+    color: white;
+}
+
+canvas {
+    width: 100%;
+    height: 100%;
+}
+
+.gui {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    max-width: 1000px;
+    margin: 0 auto;
+    height: 100%;
+    padding: 2rem 1rem;
+    display: flex;
+    flex-direction: column;
+}
+
+.gui__main {
+    flex: 1;
+}
+
+.gui__header__title {
+    font-size: 3.5rem;
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+.gui__header__level {
+    font-size: 2rem;
+    text-align: center;
+}
+
+.gui__footer {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+}
+
+.gui__footer__points, .gui__footer__lifes {
+    font-size: 1.5rem;
+}
+.gui__footer__points span, .gui__footer__lifes span {
+    font-size: 3rem;
+}
+
+.gui__footer__lifes {
+    text-align: right;
+}

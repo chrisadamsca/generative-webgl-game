@@ -1,5 +1,6 @@
 import { Shader } from "../gl/Shader";
 import { DIFFICULTY_UPDATED, Message } from "../message/Message";
+import { UIManager } from "../ui/UIManager";
 import { ILevelDifficulty } from "./ILevelDifficulty";
 import { Level } from "./Level";
 
@@ -51,13 +52,14 @@ export class LevelManager {
         this.changeLevel();
     }
 
-    public static changeLevel(): void {
-        if (LevelManager._activeLevel !== undefined) {
-            LevelManager._activeLevel.onDeactivated();
-            LevelManager._activeLevel.unload();
-            LevelManager._activeLevel = undefined;
+    public static changeLevel(first: boolean = false): void {
+        if (!first) {
+            if (LevelManager._activeLevel !== undefined) {
+                LevelManager._activeLevel.onDeactivated();
+                LevelManager._activeLevel.unload();
+                LevelManager._activeLevel = undefined;
+            }
         }
-        LevelManager.updateDifficulty();
         LevelManager.loadLevel();
     }
 
@@ -92,12 +94,13 @@ export class LevelManager {
     }
 
     private static loadLevel(): void {
-        const levelId: number = LevelManager._globalLevelId++
-
-        LevelManager._activeLevel = new Level(levelId, this._difficulty);
+        LevelManager._activeLevel = new Level(LevelManager._globalLevelId, LevelManager._difficulty);
         LevelManager._activeLevel.initialize();
         LevelManager._activeLevel.onActivated();
         LevelManager._activeLevel.load();
+        UIManager.updateLevel(this._globalLevelId);
+        LevelManager._globalLevelId++
+        LevelManager.updateDifficulty();
     }
     
 }

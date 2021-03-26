@@ -6,7 +6,6 @@ export class BehaviorManager {
     private static _registeredBuilders: {[type: string]: IBehaviorBuilder} = {};
 
     public static registerBuilder(builder: IBehaviorBuilder): void {
-        console.warn('new builder registered: ', builder.type)
         BehaviorManager._registeredBuilders[builder.type] = builder;
     }
 

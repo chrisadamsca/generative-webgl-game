@@ -118,21 +118,16 @@ export class PlayerBehavior extends BaseBehavior implements IMessageHandler {
             case COLLISION_ENTRY + this._playerCollisionComponent:
                 const entryData = message.context as CollisionData;
                 const entryOther = entryData.a.owner.id === this._owner.id ? entryData.b : entryData.a;
-                // console.warn(`[Collision] ENTER into ground: ${entryOther.owner.id}`);
                 if (entryOther.name === this._groundCollisionComponent) {
                     this._collidingGround[entryOther.owner.id] = true;
                 }
-                // console.warn('[Collision] touching ground ENTER', this._collidingGround);
                 break;
             case COLLISION_EXIT + this._playerCollisionComponent:
                 const exitData = message.context as CollisionData;
                 const exitOther = exitData.a.owner.id === this._owner.id ? exitData.b : exitData.a;
-                // console.warn(`[Collision] EXIT out of ground: ${exitOther.owner.id}`);
                 if (exitOther.name === this._groundCollisionComponent) {
                     delete this._collidingGround[exitOther.owner.id];
-                    // console.warn('[Collision] touching ground EXIT', this._collidingGround);
                     if (Object.keys(this._collidingGround).length < 1) {
-                        // console.warn('[Collision] DEAD');
                         this.die();
                     }
                 }

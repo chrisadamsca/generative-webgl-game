@@ -20,16 +20,6 @@ import { AdvancedShader } from "./gl/shaders/AdvancedShader";
 import { Shader } from "./gl/Shader";
 import { PointComponentData } from "./components/PointComponent";
 import { Camera } from "./graphics/Camera";
-
-const tempWebpackFixToIncludeColisionComponentTS = new CollisionComponentData();
-const tempWebpackFixToIncludePointComponentTS = new PointComponentData();
-const tempWebpackFixToIncludeRotationBehaviorTS = new RotationBehaviorData();
-const tempWebpackFixToIncludeKeyboardMovementBehaviorTS = new KeyboardMovementBehaviorData();
-const tempWebpackFixToIncludePlayerBehaviorTS = new PlayerBehaviorData();
-const tempWebpackFixToIncludeScrollBehaviorTS = new ScrollBehaviorData();
-const tempWebpackFixToIncludeCubeTS = new CubeComponentData();
-const i = importMath;
-
 export class Engine {
 
     private _canvas: HTMLCanvasElement;
@@ -91,7 +81,7 @@ export class Engine {
         const lightDiffuseLocation = this._shader.getUniformLocation('uLightDiffuse');
         gl.uniform3fv(lightDiffuseLocation, [1, 1, 1]); // uniform 4 float (v vector)
 
-        LevelManager.changeLevel();
+        LevelManager.changeLevel(true);
 
         setTimeout(() => {
             Message.send('GAME_START', this);
@@ -127,3 +117,13 @@ export class Engine {
     }
 
 }
+
+// Imports for Webpack Bundling
+const cc = new CollisionComponentData();
+const pc = new PointComponentData();
+const rb = new RotationBehaviorData();
+const kb = new KeyboardMovementBehaviorData();
+const pb = new PlayerBehaviorData();
+const sb = new ScrollBehaviorData();
+const c = new CubeComponentData();
+const i = importMath;
