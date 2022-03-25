@@ -1,6 +1,16 @@
 import { IMessageHandler } from "./IMessageHandler";
 import { MessageBus } from "./MessageBus";
 
+export const PLAYER_DIED = 'PLAYER_DIED';
+export const KEY_DOWN = 'KEY_DOWN';
+export const COLLISION_ENTRY = 'COLLISION_ENTRY::';
+export const COLLISION_EXIT = 'COLLISION_EXIT::';
+export const POINT = 'POINT::';
+export const GAME_RESET = 'GAME_RESET';
+export const GAME_START = 'GAME_START';
+export const MESSAGE_ASSET_LOADER_ASSET_LOADED = 'MESSAGE_ASSET_LOADER_ASSET_LOADED::';
+export const DIFFICULTY_UPDATED = 'DIFFICULTY_UPDATED::';
+
 export enum MessagePrio {
     NORMAL,
     HIGH

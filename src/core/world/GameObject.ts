@@ -6,6 +6,17 @@ import { Transform } from "../math/Transform";
 import { Vector3 } from "../math/Vector3";
 import { Scene } from "./Scene";
 
+export class GameObjectManager {
+
+    private static _count: number = 0;
+
+
+    public static registerGameObject(): number {
+        return ++GameObjectManager._count;
+    }
+
+}
+
 export class GameObject {
 
     private _id: number;
@@ -13,6 +24,7 @@ export class GameObject {
     private _parent: GameObject;
     private _isLoaded: boolean = false;
     private _scene: Scene;
+
     private _components: IComponent[] = [];
     private _behaviors: IBehavior[] = [];
 
@@ -122,6 +134,18 @@ export class GameObject {
 
         for (const child of this._children) {
             child.load();
+        }
+    }
+
+    public unload(): void {
+        this._isLoaded = false;
+
+        for (const component of this._components) {
+            component.unload();
+        }
+
+        for (const child of this._children) {
+            child.unload();
         }
     }
 

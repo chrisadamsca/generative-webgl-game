@@ -1,5 +1,5 @@
 import { Shader } from "../gl/Shader";
-import { Sprite } from "../graphics/Sprite";
+import { Cube } from "../graphics/Cube";
 import { Vector3 } from "../math/Vector3";
 import { BaseComponent } from "./BaseComponent";
 import { ComponentManager } from "./ComponentManager";
@@ -7,17 +7,24 @@ import { IComponent } from "./IComponent";
 import { IComponentBuilder } from "./IComponentBuilder";
 import { IComponentData } from "./IComponentData";
 
-export class SpriteComponentData implements IComponentData {
+export class CubeComponentData implements IComponentData {
 
     public name: string;
+    public type: string;
     public materialName: string;
+    public alpha: number;
     public origin: Vector3 = Vector3.zero;
     public width: number;
     public height: number;
+    public depth: number;
 
     public setFromJSON(json: any): void {
         if (json.name !== undefined) {
             this.name = String(json.name);
+        }
+
+        if (json.type !== undefined) {
+            this.type = String(json.type);
         }
 
         if (json.width !== undefined) {
@@ -28,8 +35,16 @@ export class SpriteComponentData implements IComponentData {
             this.height = Number(json.height);
         }
 
+        if (json.depth !== undefined) {
+            this.depth = Number(json.depth);
+        }
+
         if (json.materialName !== undefined) {
             this.materialName = String(json.materialName);
+        }
+
+        if (json.alpha !== undefined) {
+            this.alpha = Number(json.alpha);
         }
 
         if (json.origin !== undefined) {
@@ -39,48 +54,57 @@ export class SpriteComponentData implements IComponentData {
     
 }
 
-export class SpriteComponentBuilder implements IComponentBuilder {
+export class CubeComponentBuilder implements IComponentBuilder {
 
     public get type(): string {
-        return 'sprite';
+        return 'cube';
     };
 
     public buildFromJSON(json: any): IComponent {
-        const data = new SpriteComponentData();
+        const data = new CubeComponentData();
         data.setFromJSON(json);
-        return new SpriteComponent(data);
+        return new CubeComponent(data);
     }
 
 }
 
 
-ComponentManager.registerBuilder(new SpriteComponentBuilder());
+ComponentManager.registerBuilder(new CubeComponentBuilder());
 
-export class SpriteComponent extends BaseComponent {
+export class CubeComponent extends BaseComponent {
     
-    private _sprite: Sprite;
+    private _cube: Cube;
     private _width: number;
     private _height: number;
+    private _depth: number;
 
-    public constructor(data: SpriteComponentData) {
+    public constructor(data: CubeComponentData) {
         super(data);
 
         this._width = data.width;
         this._height = data.height;
+        this._depth = data.depth;
 
-        this._sprite = new Sprite(data.name, data.materialName, this._width, this._height);
+        this._cube = new Cube(data.name, data.materialName, this._width, this._height, this._depth, data.alpha);
         if (!data.origin.equals(Vector3.zero)) {
-            this._sprite.origin.copyFrom(data.origin);
+            this._cube.origin.copyFrom(data.origin);
         }
     }
 
     public load(): void {
-        this._sprite.load();
+        this._cube.load();
+    }
+
+    public unload(): void {
+        this.active = false;
+        this._cube.destroy();
     }
 
     public render(shader: Shader): void {
-        this._sprite.draw(shader, this.owner.worldMatrix);
-        super.render(shader);
+        if (this.active) {
+            this._cube.draw(shader, this.owner.worldMatrix);
+            super.render(shader);
+        }
     }
 
 }

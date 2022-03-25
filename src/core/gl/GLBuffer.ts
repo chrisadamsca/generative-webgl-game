@@ -52,13 +52,17 @@ export class GLBuffer {
         gl.deleteBuffer(this._buffer);
     }
 
+    public get data(): any {
+        return this._data;
+    }
+
     public bind(normalized: boolean = false): void {
         gl.bindBuffer(this._targetBufferType, this._buffer);
-
+        
         if (this._hasAttributeLocation) {
             for (const attribute of this._attributes) {
-                gl.vertexAttribPointer(attribute.location, attribute.size, this._dataType, normalized, this._stride, attribute.offset * this._typeSize);
                 gl.enableVertexAttribArray(attribute.location);
+                gl.vertexAttribPointer(attribute.location, attribute.size, this._dataType, normalized, this._stride, attribute.offset * this._typeSize);
             }
         }
     }
@@ -118,7 +122,6 @@ export class GLBuffer {
                 bufferData = new Uint8Array(this._data);
                 break;
         }
-
         gl.bufferData(this._targetBufferType, bufferData, gl.STATIC_DRAW);
     }
 

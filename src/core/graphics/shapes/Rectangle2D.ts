@@ -1,18 +1,18 @@
-import { Vector2 } from "../../math/Vector2";
+import { Vector3 } from "../../math/Vector3";
 import { Circle2D } from "./Circle2D";
-import { IShape2D } from "./IShape2d";
+import { IShape } from "./IShape";
 
-export class Rectangle2D implements IShape2D {
+export class Rectangle2D implements IShape {
 
-    public position: Vector2 = Vector2.zero;
+    public position: Vector3 = Vector3.zero;
 
-    public origin: Vector2 = Vector2.zero;
+    public origin: Vector3 = Vector3.zero;
 
     public width: number;
     public height: number;
 
-    public get offset(): Vector2 {
-        return new Vector2((this.width * this.origin.x), (this.height * this.origin.y));
+    public get offset(): Vector3 {
+        return new Vector3((this.width * this.origin.x), (this.height * this.origin.y));
     }
 
     public setFromJson(json: any): void {
@@ -35,12 +35,12 @@ export class Rectangle2D implements IShape2D {
         this.height = Number(json.height);
     }
 
-    public intersects(other: IShape2D): boolean {
+    public intersects(other: IShape): boolean {
         if (other instanceof Rectangle2D) {
             return (this.pointInShape(other.position) || 
-                this.pointInShape(new Vector2(other.position.x + other.width, other.position.y)) ||
-                this.pointInShape(new Vector2(other.position.x + other.width, other.position.y + other.height)) ||
-                this.pointInShape(new Vector2(other.position.x, other.position.y + other.height)) );
+                this.pointInShape(new Vector3(other.position.x + other.width, other.position.y)) ||
+                this.pointInShape(new Vector3(other.position.x + other.width, other.position.y + other.height)) ||
+                this.pointInShape(new Vector3(other.position.x, other.position.y + other.height)) );
         }
 
         if (other instanceof Circle2D) {
@@ -54,7 +54,7 @@ export class Rectangle2D implements IShape2D {
         return false;
     }
 
-    public pointInShape(point: Vector2): boolean {
+    public pointInShape(point: Vector3): boolean {
         
         const x = this.width < 0 ? this.position.x - this.width : this.position.x;
         const y = this.height < 0 ? this.position.y - this.height : this.position.y;

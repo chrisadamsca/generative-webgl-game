@@ -1,11 +1,8 @@
-import { AudioManager } from "../audio/AudioManager";
 import { CollisionData } from "../collision/CollisionManager";
-import { AnimatedSpriteComponent } from "../components/AnimatedSpriteComponent";
 import { InputManager, Keys } from "../input/InputManager";
-import { Vector2 } from "../math/Vector2";
 import { Vector3 } from "../math/Vector3";
 import { IMessageHandler } from "../message/IMessageHandler";
-import { Message } from "../message/Message";
+import { COLLISION_ENTRY, COLLISION_EXIT, GAME_RESET, GAME_START, KEY_DOWN, Message } from "../message/Message";
 import { BaseBehavior } from "./BaseBehavior";
 import { BehaviorManager } from "./BehaviorManager";
 import { IBehavior } from "./IBehavior";
@@ -15,10 +12,10 @@ import { IBehaviorData } from "./IBehaviorData";
 export class PlayerBehaviorData implements IBehaviorData {
 
     public name: string;
-    public acceleration: Vector2 = new Vector2(0, 920);
+    public speed: number;
     public playerCollisionComponent: string;
     public groundCollisionComponent: string;
-    public animatedSpriteName: string;
+    public resetPosition: Vector3 = Vector3.zero;
 
     public setFromJSON(json: any): void {
         if (json.name === undefined) {
@@ -27,14 +24,12 @@ export class PlayerBehaviorData implements IBehaviorData {
 
         this.name = String(json.name);
 
-        if (json.acceleration !== undefined) {
-            this.acceleration.setFromJSON(json.acceleration);
+        if (json.resetPosition !== undefined) {
+            this.resetPosition.setFromJSON(json.resetPosition);
         }
 
-        if (json.animatedSpriteName === undefined) {
-            throw new Error(`animatedSpriteName must be defined in BehaviorData.`)
-        } else {
-            this.animatedSpriteName = String(json.animatedSpriteName);
+        if (json.speed !== undefined) {
+            this.speed = Number(json.speed);
         }
 
         if (json.playerCollisionComponent === undefined) {
@@ -69,55 +64,78 @@ export class PlayerBehaviorBuilder implements IBehaviorBuilder {
 
 export class PlayerBehavior extends BaseBehavior implements IMessageHandler {
 
-    private _acceleration: Vector2;
-    private _velocity: Vector2 = Vector2.zero;
+    private _nextVelocity: Vector3 = Vector3.zero;
+    private _velocity: Vector3 = Vector3.zero;
+    private _started: boolean = false;
+    private _speed: number = 0.1;
     private _isAlive: boolean = true;
     private _playerCollisionComponent: string;
     private _groundCollisionComponent: string;
-    private _animatedSpriteName: string;
-    private _isPlaying: boolean = false;
     private _initialPosition: Vector3 = Vector3.zero;
+    private _resetPosition: Vector3 = Vector3.zero;
+
+    private _collidingGround: {[key: number]: boolean} = {};
+
+    private _isFalling: boolean = false;
     
-    private _sprite: AnimatedSpriteComponent;
-    private _pipeNames: string[] = ["pipe1Collision_end", "pipe1Collision_middle_top", "pipe1Collision_endneg", "pipe1Collision_middle_bottom"]
 
     public constructor(data: PlayerBehaviorData) {
         super(data);
         
-        this._acceleration = data.acceleration;
+        this._resetPosition = data.resetPosition;
         this._groundCollisionComponent = data.groundCollisionComponent;
         this._playerCollisionComponent = data.playerCollisionComponent;
-        this._animatedSpriteName = data.animatedSpriteName;
+        this._speed = data.speed;
 
-        Message.subscribe('MOUSE_DOWN', this);
-        Message.subscribe('KEY_DOWN', this);
-        Message.subscribe('COLLISION_ENTRY::' + this._playerCollisionComponent, this);
-        Message.subscribe('GAME_RESET', this);
-        Message.subscribe('GAME_START', this);
+        Message.subscribe(KEY_DOWN, this);
+        Message.subscribe(COLLISION_ENTRY + this._playerCollisionComponent, this);
+        Message.subscribe(COLLISION_EXIT + this._playerCollisionComponent, this);
+        Message.subscribe(GAME_RESET, this);
+        Message.subscribe(GAME_START, this);
     }
 
     public onMessage(message: Message): void {
+
         switch (message.code) {
-            case 'MOUSE_DOWN':
-            case 'KEY_DOWN':
-                console.warn('FLAPP GODAMMIT');
+            case KEY_DOWN:
+                this.start();
+                if (InputManager.isKeyDown(Keys.LEFT) || InputManager.isKeyDown(Keys.A)) {
+                    this._nextVelocity.set(-this._speed, 0, 0);
+                }
                 
-                this.onFlap();
-                break;
-            case 'COLLISION_ENTRY::' + this._playerCollisionComponent:
-                const data: CollisionData = message.context as CollisionData;
-                if (data.a.name === this._groundCollisionComponent || data.b.name === this._groundCollisionComponent) {
-                    this.die();
-                    this.decelerate();
+                if (InputManager.isKeyDown(Keys.RIGHT) || InputManager.isKeyDown(Keys.D)) {
+                    this._nextVelocity.set(this._speed, 0, 0);
                 }
-                if (this._pipeNames.indexOf(data.a.name) !== -1 || this._pipeNames.indexOf(data.a.name) !== -1 ) {
-                    this.die();
+                
+                if (InputManager.isKeyDown(Keys.UP) || InputManager.isKeyDown(Keys.W)) {
+                    this._nextVelocity.set(0, 0, -this._speed);
+                }
+                
+                if (InputManager.isKeyDown(Keys.DOWN) || InputManager.isKeyDown(Keys.S)) {
+                    this._nextVelocity.set(0, 0, this._speed);
                 }
                 break;
-            case 'GAME_RESET':
+            case COLLISION_ENTRY + this._playerCollisionComponent:
+                const entryData = message.context as CollisionData;
+                const entryOther = entryData.a.owner.id === this._owner.id ? entryData.b : entryData.a;
+                if (entryOther.name === this._groundCollisionComponent) {
+                    this._collidingGround[entryOther.owner.id] = true;
+                }
+                break;
+            case COLLISION_EXIT + this._playerCollisionComponent:
+                const exitData = message.context as CollisionData;
+                const exitOther = exitData.a.owner.id === this._owner.id ? exitData.b : exitData.a;
+                if (exitOther.name === this._groundCollisionComponent) {
+                    delete this._collidingGround[exitOther.owner.id];
+                    if (Object.keys(this._collidingGround).length < 1) {
+                        this.die();
+                    }
+                }
+                break;
+            case GAME_RESET:
                 this.reset();
                 break;
-            case 'GAME_START':
+            case GAME_START:
                 this.start();
                 break;
             default:
@@ -128,116 +146,69 @@ export class PlayerBehavior extends BaseBehavior implements IMessageHandler {
     public updateReady(): void {
         super.updateReady();
 
-        this._sprite = this._owner.getComponentByName(this._animatedSpriteName) as AnimatedSpriteComponent;
-        if (this._sprite === undefined) {
-            throw new Error(`AnimatedSpriteComponent '${this._animatedSpriteName}' is not attached to the owner of this component`);
-        }
-
-        this._sprite.setFrame(0);
-
         this._initialPosition.copyFrom(this._owner.transform.position);
 
     }
 
     public update(time: number): void {
-        const seconds = time / 1000;
 
-        if (this._isPlaying) {
-            this._velocity.add(this._acceleration.clone().scale(seconds));
-        }
-
-        // Limit max speed
-        if (this._velocity.y > 400) {
-            this._velocity.y = 400;
-        }
-
-        // Prevent flying to high
-        if (this._owner.transform.position.y < -13) {
-            this._owner.transform.position.y = -13;
-            this._velocity.y = 0;
-        }
+        if (this._started && this._isFalling) {
+            this._owner.transform.position.add(new Vector3(0, -this._speed * 2, 0));
+        }        
         
-        this._owner.transform.position.add(this._velocity.clone().scale(seconds).toVector3());
-        this._owner.transform.position.add(new Vector3(0, 1, 0));
-
-        if (this._velocity.y < 0) {
-            this._owner.transform.rotation.z -= (Math as any).degToRad(600.0) * seconds;
-            if (this._owner.transform.rotation.z < (Math as any).degToRad(-20)) {
-                this._owner.transform.rotation.z = (Math as any).degToRad(-20);
+        if (this._nextVelocity.x !== 0) {
+            const ownerPositionZ = this._owner.transform.position.z;
+            let deviationFromGrid = Math.abs(ownerPositionZ % 1);
+            deviationFromGrid = deviationFromGrid >= 0.5 ? (1 - deviationFromGrid) : deviationFromGrid;
+            if ( deviationFromGrid < 0.2) {
+                this._owner.transform.position.z = Math.round(ownerPositionZ);
+                this._velocity.copyFrom(this._nextVelocity);
+            }
+        } else if (this._nextVelocity.z !== 0) {
+            const ownerPositionX = this._owner.transform.position.x;
+            let deviationFromGrid = Math.abs(ownerPositionX % 1);
+            deviationFromGrid = deviationFromGrid >= 0.5 ? (1 - deviationFromGrid) : deviationFromGrid;
+            if ( deviationFromGrid < 0.2) {
+                this._owner.transform.position.x = Math.round(this._owner.transform.position.x);
+                this._velocity.copyFrom(this._nextVelocity);
             }
         }
 
-        if (this.isFalling || !this._isAlive) {
-            this._owner.transform.rotation.z += (Math as any).degToRad(480.0) * seconds;
-            if (this._owner.transform.rotation.z > (Math as any).degToRad(90)) {
-                this._owner.transform.rotation.z = (Math as any).degToRad(90);
-            }
+
+        if (this._isAlive) {
+            this._owner.transform.position.add(this._velocity);
         }
 
-        if (this.shouldNotFlap()) {
-            this._sprite.stop();
-        } else {
-            if (!this._sprite.isPlaying) {
-                this._sprite.play();
-            }
+        if (this._owner.transform.position.y < -5) {
+            Message.send('PLAYER_DIED', this);
+            this.reset();
         }
 
         super.update(time);
     }
 
-    private isFalling(): boolean {
-        return this._velocity.y > 220.0;
-    }
-
-    private shouldNotFlap(): boolean {
-        return this._isPlaying || this._velocity.y > 220.0 || !this._isAlive;
-    }
-
     private die(): void {
         if (this._isAlive) {
+            this._isFalling = true;
             this._isAlive = false;
             // AudioManager.playSound('dead');
-            Message.send('PLAYER_DIED', this);
         }
     }
 
     private reset(): void {
+        this._owner.transform.position.copyFrom(this._resetPosition);
+        this._velocity = Vector3.zero;
+        this._nextVelocity = Vector3.zero;
         this._isAlive = true;
-        this._isPlaying = false;
-        this._sprite.owner.transform.position.copyFrom(this._initialPosition);
-        this._sprite.owner.transform.rotation.z = 0;
-
-        this._velocity.set(0, 0);
-        this._acceleration.set(0, 920);
-        this._sprite.play();
+        this._isFalling = false;
+        this.start();
     }
 
     private start(): void {
-        console.warn('#### STARTING');
-        
-        this._isPlaying = true;
-        Message.send('PLAYER_RESET', this);
-    }
-
-    private decelerate(): void {
-        this._acceleration.y = 0;
-        this._velocity.y = 0;
-    }
-
-    private onFlap(): void {
-        if (this._isAlive && this._isPlaying) {
-            this._velocity.y = -280;
-            AudioManager.playSound('flap');
+        if (!this._started) {
+            this._started = true;
         }
-    }
-
-    private onRestart(y: number): void {
-        this._owner.transform.rotation.z = 0;
-        this._owner.transform.position.set(33, y);
-        this._velocity.set(0, 0);
-        this._acceleration.set(0, 920);
-        this._isAlive = true;
-        this._sprite.play();
+        // Message.send('PLAYER_RESET', this);
     }
 
 }

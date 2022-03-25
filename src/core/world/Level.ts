@@ -1,7 +1,16 @@
+import { vec3 } from "gl-matrix";
 import { BehaviorManager } from "../behaviors/BehaviorManager";
 import { ComponentManager } from "../components/ComponentManager";
 import { Shader } from "../gl/Shader";
-import { GameObject } from "./GameObject";
+import { Vector3 } from "../math/Vector3";
+import { IMessageHandler } from "../message/IMessageHandler";
+import { Message, PLAYER_DIED, POINT } from "../message/Message";
+import { UIManager } from "../ui/UIManager";
+import { GameObject, GameObjectManager } from "./GameObject";
+import { EntityConfigs } from "./helpers/EntityConfigs";
+import { ILevelDifficulty } from "./ILevelDifficulty";
+import { LevelManager } from "./LevelManager";
+import { LevelMap, MapTileType } from "./Map";
 import { Scene } from "./Scene";
 
 export enum LevelState {
@@ -10,19 +19,21 @@ export enum LevelState {
     UPDATING
 }
 
-export class Level {
+export class Level implements IMessageHandler {
     
     private _id: number;
-    private _name: string;
-    private _description: string;
     private _scene: Scene;
     private _state: LevelState = LevelState.UNINITIALIZED;
     private _globalId: number = -1;
+    private _difficulty: ILevelDifficulty;
 
-    public constructor(id: number, name: string, description: string) {
+    private _collectedPoints: number = 0;
+    private _playerLifes: number = 3;
+    private _map: LevelMap;
+
+    public constructor(id: number, difficulty: ILevelDifficulty) {
         this._id = id;
-        this._name = name;
-        this._description = description;
+        this._difficulty = difficulty;
         this._scene = new Scene();
     }
 
@@ -30,40 +41,68 @@ export class Level {
         return this._id;
     }
 
-    public get name(): string {
-        return this._name;
-    }
-
-    public get description(): string {
-        return this._description;
-    }
-
     public get scene(): Scene {
         return this._scene;
     }
 
-    public initialize(levelData: any): void {
-        if (levelData.objects === undefined) {
-            throw new Error(`Level initialisation error: Objects not present.`);
+    public onMessage(message: Message): void {
+        if (message.code === POINT + this._id) {
+            this._collectedPoints++;
+            UIManager.updatePoints(this._collectedPoints, this._difficulty.pointsToCollect);
+            if (this._collectedPoints === this._difficulty.pointsToCollect) {
+                Message.send('LEVEL_WON::' + this._id, this);
+                LevelManager.changeLevel();
+            }
+        } else if (message.code === PLAYER_DIED) {
+            this._playerLifes--;
+            UIManager.updateLifes(this._playerLifes);
+            if (this._playerLifes > 0) {
+            } else {
+                Message.send('LEVEL_LOST::' + this._id, this);
+                LevelManager.reset();
+            }
         }
+    }
 
-        for (const key in levelData.objects) {
-            const object = levelData.objects[key];
-            this.loadGameObject(object, this._scene.root);
-        }
+    public initialize(): void {
+        Message.subscribe(PLAYER_DIED, this);
+        Message.subscribe(POINT + this._id, this);
+
+        UIManager.updateLifes(this._playerLifes);
+        UIManager.updatePoints(this._collectedPoints, this._difficulty.pointsToCollect);
+
+        this._map = new LevelMap(this._difficulty);
+
+        this._map.tiles.forEach((tile, index) => {
+            if (tile.type !== MapTileType.HOLE) {
+                // Load ground
+                this.loadGameObject(EntityConfigs.getGroundEntityConfig(`ground_${index}`, tile.partOfMainland, tile.position, tile.scale, tile.alpha), this._scene.root);
+
+                if (tile.type === MapTileType.START) {
+                    // Load player
+                    this.loadGameObject(EntityConfigs.getPlayerEntityConfig(tile.position, this._difficulty.speed), this._scene.root);
+                } else if (tile.type === MapTileType.POINT) {
+                    // Load points
+                    this.loadGameObject(EntityConfigs.getPointEntityConfig(`point_${index}`, tile.position), this._scene.root);
+                }
+            }
+        });
     }
 
     public load(): void {
         this._state = LevelState.LOADING;
 
         this._scene.load();
+
         this._scene.root.updateReady();
 
         this._state = LevelState.UPDATING;
     }
 
     public unload(): void {
-
+        Message.unsubscribe('PLAYER_DIED', this);
+        Message.unsubscribe('POINT::' + this._id, this);
+        this._scene.root.unload();
     }
 
     public update(time: number): void {
@@ -83,10 +122,12 @@ export class Level {
     }
 
     public onDeactivated(): void {
-
+    
     }
 
     private loadGameObject(dataSection: any, parent: GameObject): void {
+        if (parent === undefined) parent = this._scene.root;
+        
         let name: string;
         if (dataSection.name !== undefined) {
             name = String(dataSection.name);

@@ -1,4 +1,4 @@
-export var gl: WebGLRenderingContext;
+export var gl: WebGL2RenderingContext;
 
 export class GLUtilities {
 
@@ -15,7 +15,7 @@ export class GLUtilities {
             document.body.appendChild(canvas);
         }
 
-        gl = canvas.getContext('webgl');
+        gl = canvas.getContext('webgl2');
         if (!gl) {
             throw new Error('Unable to initialize WebGL context.');
         }

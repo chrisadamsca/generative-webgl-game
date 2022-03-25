@@ -10,10 +10,10 @@ export class Material {
     private _diffuseTexture: Texture;
     private _tint: Color;
 
-    public constructor(name: string, diffuseTextureName: string, tint: Color) {
+    public constructor(name: string, tint: Color, diffuseTextureName?: string) {
         this._name = name;
-        this._diffuseTextureName = diffuseTextureName;
         this._tint = tint;
+        this._diffuseTextureName = diffuseTextureName;
 
         if (this.diffuseTextureName !== undefined) {
             this._diffuseTexture = TextureManager.getTexture(this._diffuseTextureName);

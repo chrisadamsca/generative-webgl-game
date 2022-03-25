@@ -32,7 +32,7 @@ export class MaterialManager {
 
     public static releaseMaterial(materialName: string): void {
         if (MaterialManager._matrials[materialName] === undefined) {
-            console.warn(`Cannot release material (${materialName}), since it has not been registered.`);
+            // console.warn(`Cannot release material (${materialName}), since it has not been registered.`);
         } else {
             MaterialManager._matrials[materialName].referenceCount--;
             if (MaterialManager._matrials[materialName].referenceCount < 1) {

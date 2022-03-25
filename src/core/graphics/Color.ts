@@ -25,39 +25,39 @@ export class Color {
     }
 
     public get g(): number {
-        return this._r;
+        return this._g;
     }
 
     public get gFloat(): number {
-        return this._r / 255.0;
+        return this._g / 255.0;
     }
 
     public set g(value: number) {
-        this._r = value;
+        this._g = value;
     }
 
     public get b(): number {
-        return this._r;
+        return this._b;
     }
 
     public get bFloat(): number {
-        return this._r / 255.0;
+        return this._b / 255.0;
     }
 
     public set b(value: number) {
-        this._r = value;
+        this._b = value;
     }
 
     public get a(): number {
-        return this._r;
+        return this._a;
     }
 
     public get aFloat(): number {
-        return this._r / 255.0;
+        return this._a / 255.0;
     }
 
     public set a(value: number) {
-        this._r = value;
+        this._a = value;
     }
 
     public toArray(): number[] {
@@ -72,6 +72,12 @@ export class Color {
         return new Float32Array(this.toFloatArray());
     }
 
+    public toVec3Float32Array(): Float32Array {
+        const arr = this.toFloatArray();
+        arr.splice(-1);
+        return new Float32Array(arr);
+    }
+    
     public static white(): Color {
         return new Color(255, 255, 255, 255);
     }

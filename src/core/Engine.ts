@@ -1,18 +1,13 @@
 import { AssetManager } from "./assets/AssetManager";
 import { gl, GLUtilities } from "./gl/GLUtilities";
-import { BasicShader } from "./gl/shaders/BasicShader";
 import { Color } from "./graphics/Color";
 import { Material } from "./graphics/Material";
 import { MaterialManager } from "./graphics/MaterialManager";
-import { Matrix4x4 } from "./math/matrix4x4";
 import { MessageBus } from "./message/MessageBus";
 import { LevelManager } from "./world/LevelManager";
-import { SpriteComponentData } from "./components/SpriteComponent"
 import { RotationBehaviorData } from "./behaviors/RotationBehavior";
-import { AnimatedSpriteComponentData } from "./components/AnimatedSpriteComponent";
 import { InputManager, MouseContext } from "./input/InputManager";
 import { KeyboardMovementBehaviorData } from "./behaviors/KeyboardMovementBehavior";
-import { IMessageHandler } from "./message/IMessageHandler";
 import { Message } from "./message/Message";
 import { AudioManager } from "./audio/AudioManager";
 import { CollisionComponentData } from "./components/CollisionComponent";
@@ -20,25 +15,19 @@ import { CollisionManager } from "./collision/CollisionManager";
 import { PlayerBehaviorData } from "./behaviors/PlayerBehavior";
 import { importMath } from "./math/MathExtensions";
 import { ScrollBehaviorData } from "./behaviors/ScrollBehavior";
-
-const tempWebpackFixToIncludeSpriteTS = new SpriteComponentData();
-const tempWebpackFixToIncludeAnimatedSpriteTS = new AnimatedSpriteComponentData();
-const tempWebpackFixToIncludeColisionComponentTS = new CollisionComponentData();
-const tempWebpackFixToIncludeRotationBehaviorTS = new RotationBehaviorData();
-const tempWebpackFixToIncludeKeyboardMovementBehaviorTS = new KeyboardMovementBehaviorData();
-const tempWebpackFixToIncludePlayerBehaviorTS = new PlayerBehaviorData();
-const tempWebpackFixToIncludeScrollBehaviorTS = new ScrollBehaviorData();
-const i = importMath;
-
-export class Engine implements IMessageHandler{
+import { CubeComponentData } from "./components/CubeComponent";
+import { AdvancedShader } from "./gl/shaders/AdvancedShader";
+import { Shader } from "./gl/Shader";
+import { PointComponentData } from "./components/PointComponent";
+import { Camera } from "./graphics/Camera";
+import { UIManager } from "./ui/UIManager";
+export class Engine {
 
     private _canvas: HTMLCanvasElement;
-    private _basicShader: BasicShader;
+    private _shader: Shader;
     private _previousTime: number = 0;
-    
-    
-    // temporary:
-    private _projection: Matrix4x4;
+
+    private _camera: Camera;
 
     public constructor() {
         console.log('Engine created.');
@@ -50,14 +39,10 @@ export class Engine implements IMessageHandler{
             this._canvas.height = window.innerHeight;
 
             gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
-            this._projection = Matrix4x4.orthographic(0, this._canvas.width, this._canvas.height, 0, -100.0, 100.0);
-        }
-    }
-
-    public onMessage(message: Message): void {
-        if (message.code === 'MOUSE_UP') {
-            const context = message.context as MouseContext;
-            document.title = `Pos: [${context.position.x}, ${context.position.y}]`;
+            
+            if (this._camera) {
+                this._camera.resize();
+            }
         }
     }
 
@@ -67,33 +52,38 @@ export class Engine implements IMessageHandler{
         AssetManager.initialize();
         InputManager.initialize();
         LevelManager.initialize();
-        
+        UIManager.initialize();
+
         this._canvas = GLUtilities.initialize();
         this.resize();
 
-        gl.clearColor(0, 0, 1, 1);
-        gl.enable(gl.BLEND);
-        gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+        gl.clearColor(152 / 255, 201 / 255, 244 / 255, 1);
+        gl.enable(gl.DEPTH_TEST);
 
         // Load Shaders
-        this._basicShader = new BasicShader();
-        this._basicShader.use()
+        this._shader = new AdvancedShader();
+        this._shader.use()
+
+        // Load Camera
+        this._camera = new Camera(this._shader);
+        this._camera.initialize();
 
         // Load Materials
-        MaterialManager.registerMaterial(new Material('bg', '/assets/textures/bg.png', Color.white()));
-        MaterialManager.registerMaterial(new Material('end', '/assets/textures/end.png', Color.white()));
-        MaterialManager.registerMaterial(new Material('middle', '/assets/textures/middle.png', Color.white()));
-        MaterialManager.registerMaterial(new Material('grass', '/assets/textures/grass.png', Color.white()));
-        MaterialManager.registerMaterial(new Material('duck', '/assets/textures/duck.png', Color.white()));
+        MaterialManager.registerMaterial(new Material('ground', new Color(72, 207, 196)));
+        MaterialManager.registerMaterial(new Material('point', new Color(7, 122, 116)));
+        MaterialManager.registerMaterial(new Material('player', new Color(221, 100, 108)));
 
         // Load Sounds
-        AudioManager.loadSoundFile('flap', '/assets/sounds/flap.mp3');
-        AudioManager.loadSoundFile('ting', '/assets/sounds/ting.mp3');
-        AudioManager.loadSoundFile('dead', '/assets/sounds/dead.mp3');
+        AudioManager.loadSoundFile('ding', 'assets/sounds/ding.wav');
 
-        this._projection = Matrix4x4.orthographic(0, this._canvas.width, this._canvas.height, 0, -100.0, 100.0);
+        // Setup light
+        const lightDirLocation = this._shader.getUniformLocation('uLightDirection');
+        gl.uniform3fv(lightDirLocation, [0, -5, -3]); // uniform 4 float (v vector)
 
-        LevelManager.changeLevel(0);
+        const lightDiffuseLocation = this._shader.getUniformLocation('uLightDiffuse');
+        gl.uniform3fv(lightDiffuseLocation, [1, 1, 1]); // uniform 4 float (v vector)
+
+        LevelManager.changeLevel(true);
 
         setTimeout(() => {
             Message.send('GAME_START', this);
@@ -114,19 +104,29 @@ export class Engine implements IMessageHandler{
         MessageBus.update(delta);
         LevelManager.update(delta);
         CollisionManager.update(delta);
+        this._camera.update(delta);
 
         this._previousTime = performance.now();
     }
 
     private render(): void {
-        gl.clear(gl.COLOR_BUFFER_BIT); // ??? What is this? Resetting everything, but how?
+        gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-        LevelManager.render(this._basicShader);
+        this._camera.render();
 
-        const projectionLocation = this._basicShader.getUniformLocation('u_projection');
-        gl.uniformMatrix4fv(projectionLocation, false, this._projection.toFloat32Array());
+        LevelManager.render(this._shader);
 
         requestAnimationFrame(() => this.loop());
     }
 
 }
+
+// Imports for Webpack Bundling
+const cc = new CollisionComponentData();
+const pc = new PointComponentData();
+const rb = new RotationBehaviorData();
+const kb = new KeyboardMovementBehaviorData();
+const pb = new PlayerBehaviorData();
+const sb = new ScrollBehaviorData();
+const c = new CubeComponentData();
+const i = importMath;

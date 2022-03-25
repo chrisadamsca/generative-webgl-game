@@ -3,7 +3,7 @@ import { gl } from "./GLUtilities";
 export abstract class Shader {
 
     private _name: string;
-    private _program: WebGLProgram
+    public _program: WebGLProgram
     private _attribtues: {[name: string]: number} = {};
     private _uniforms: {[name: string]: WebGLUniformLocation} = {};
 
@@ -68,6 +68,11 @@ export abstract class Shader {
         gl.linkProgram(this._program);
 
         let error = gl.getProgramInfoLog(this._program).trim();
+        
+        if (!gl.getProgramParameter(this._program, gl.LINK_STATUS)) {
+            console.error('Could not initialize shaders');
+          }
+
         if (error !== "") {
             throw new Error(`Error linking shader ${this.name}: ${error}`);
         }
