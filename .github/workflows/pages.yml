@@ -1,9 +1,6 @@
 name: deploy-pages
 
-on:  
-  release:
-    types:
-      - released
+on: workflow_dispatch
     
 jobs:
   deploy:
