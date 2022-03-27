@@ -15,7 +15,8 @@
   },
   "scripts": {
     "start": "npm run start:dev",
-    "start:dev": "npx webpack-dev-server --config webpack.config.js"
+    "start:dev": "npx webpack-dev-server --config webpack.config.js",
+    "build": "npx webpack --config webpack.config.js"
   },
   "author": "",
   "license": "ISC",
