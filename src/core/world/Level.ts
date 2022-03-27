@@ -1,12 +1,10 @@
-import { vec3 } from "gl-matrix";
 import { BehaviorManager } from "../behaviors/BehaviorManager";
 import { ComponentManager } from "../components/ComponentManager";
 import { Shader } from "../gl/Shader";
-import { Vector3 } from "../math/Vector3";
 import { IMessageHandler } from "../message/IMessageHandler";
 import { Message, PLAYER_DIED, POINT } from "../message/Message";
 import { UIManager } from "../ui/UIManager";
-import { GameObject, GameObjectManager } from "./GameObject";
+import { GameObject } from "./GameObject";
 import { EntityConfigs } from "./helpers/EntityConfigs";
 import { ILevelDifficulty } from "./ILevelDifficulty";
 import { LevelManager } from "./LevelManager";

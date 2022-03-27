@@ -1,4 +1,4 @@
-import { Message, MessagePrio, MESSAGE_ASSET_LOADER_ASSET_LOADED } from "../message/Message";
+import { Message, MESSAGE_ASSET_LOADER_ASSET_LOADED } from "../message/Message";
 import { IAsset } from "./IAsset";
 import { IAssetLoader } from "./IAssetLoader";
 import { ImageAssetLoader } from "./ImageAssetLoader";

@@ -5,7 +5,6 @@ import { Matrix4x4 } from "../math/matrix4x4";
 import { Vector3 } from "../math/Vector3";
 import { Material } from "./Material";
 import { MaterialManager } from "./MaterialManager";
-import { Vertex } from "./Vertex";
 import { mat4 } from "gl-matrix";
 
 export class Cube {

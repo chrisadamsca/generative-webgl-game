@@ -1,5 +1,5 @@
 import { AssetManager } from "../assets/AssetManager";
-import { ImageAsset, ImageAssetLoader } from "../assets/ImageAssetLoader";
+import { ImageAsset } from "../assets/ImageAssetLoader";
 import { gl } from "../gl/GLUtilities";
 import { IMessageHandler } from "../message/IMessageHandler";
 import { Message, MESSAGE_ASSET_LOADER_ASSET_LOADED } from "../message/Message";

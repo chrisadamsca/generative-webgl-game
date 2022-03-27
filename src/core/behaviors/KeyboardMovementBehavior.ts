@@ -1,5 +1,4 @@
 import { InputManager, Keys } from "../input/InputManager";
-import { Vector3 } from "../math/Vector3";
 import { BaseBehavior } from "./BaseBehavior";
 import { BehaviorManager } from "./BehaviorManager";
 import { IBehavior } from "./IBehavior";

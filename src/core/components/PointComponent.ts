@@ -1,15 +1,10 @@
 import { AudioManager } from "../audio/AudioManager";
-import { CollisionData, CollisionManager } from "../collision/CollisionManager";
+import { CollisionData } from "../collision/CollisionManager";
 import { Shader } from "../gl/Shader";
-import { AABB } from "../graphics/shapes/AABB";
-import { Circle2D } from "../graphics/shapes/Circle2D";
-import { IShape } from "../graphics/shapes/IShape";
-import { Rectangle2D } from "../graphics/shapes/Rectangle2d";
 import { IMessageHandler } from "../message/IMessageHandler";
 import { COLLISION_ENTRY, Message, POINT } from "../message/Message";
 import { LevelManager } from "../world/LevelManager";
 import { BaseComponent } from "./BaseComponent";
-import { CollisionComponent } from "./CollisionComponent";
 import { ComponentManager } from "./ComponentManager";
 import { IComponent } from "./IComponent";
 import { IComponentBuilder } from "./IComponentBuilder";

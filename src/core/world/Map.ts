@@ -1,5 +1,5 @@
 import { Vector3 } from "../math/Vector3";
-import {Noise} from "noisejs";
+import { Noise } from "noisejs";
 import { ILevelDifficulty } from "./ILevelDifficulty";
 
 export class LevelMap {

@@ -6,7 +6,7 @@ import { MaterialManager } from "./graphics/MaterialManager";
 import { MessageBus } from "./message/MessageBus";
 import { LevelManager } from "./world/LevelManager";
 import { RotationBehaviorData } from "./behaviors/RotationBehavior";
-import { InputManager, MouseContext } from "./input/InputManager";
+import { InputManager } from "./input/InputManager";
 import { KeyboardMovementBehaviorData } from "./behaviors/KeyboardMovementBehavior";
 import { Message } from "./message/Message";
 import { AudioManager } from "./audio/AudioManager";
